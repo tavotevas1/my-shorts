@@ -1,262 +1,547 @@
 <!DOCTYPE html>
-<html lang="lt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlowShorts AI Studio - SDK Edition</title>
-    <!-- ElevenLabs JS SDK per CDN -->
-    <script src="https://unpkg.com/elevenlabs/dist/index.umd.js"></script>
+    <title>FlowShorts AI Studio - ElevenLabs Powered 9:16 Video Generator</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;0,900;1,800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        flow: {
+                            bg: '#07090e',
+                            card: '#0f1420',
+                            border: '#1a2333',
+                            cyan: '#00f2fe',
+                            purple: '#7928ca',
+                            yellow: '#facc15'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
-        body { background: #090d16; color: #f8fafc; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
-        h1 { margin-bottom: 20px; color: #38bdf8; text-align: center; font-size: 26px; font-weight: 800; }
-        .container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 1100px; width: 100%; justify-content: center; }
-        .controls, .preview { flex: 1; min-width: 340px; background: #111827; padding: 25px; border-radius: 16px; border: 1px solid #1f2937; }
-        .preview { display: flex; flex-direction: column; align-items: center; }
-        label { display: block; margin-top: 15px; margin-bottom: 6px; font-weight: 700; color: #38bdf8; font-size: 13px; text-transform: uppercase; }
-        textarea, input, select, button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #374151; background: #030712; color: #fff; font-size: 14px; }
-        textarea { height: 110px; resize: vertical; }
-        button { margin-top: 20px; padding: 15px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.2s; }
-        button:hover { background: #1d4ed8; }
-        canvas { border-radius: 12px; border: 3px solid #38bdf8; max-width: 300px; height: auto; background: #000; box-shadow: 0 0 25px rgba(56,189,248,0.25); }
-        #downloadBtn { background: #16a34a; display: none; margin-top: 15px; text-decoration: none; width: 100%; text-align: center; }
-        #downloadBtn button { margin-top: 0; background: #16a34a; }
-        .status { margin-top: 12px; font-size: 14px; color: #f59e0b; text-align: center; font-weight: 700; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #07090e; }
+        ::-webkit-scrollbar-thumb { background: #1a2333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2d3b54; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #facc15 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-btn {
+            background: linear-gradient(135deg, #7928ca 0%, #4f46e5 50%, #00f2fe 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .gradient-btn:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+        }
+
+        .glass-card {
+            background: rgba(15, 20, 32, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+        .glow-effect { animation: pulseGlow 4s infinite ease-in-out; }
     </style>
 </head>
-<body>
+<body class="bg-flow-bg text-slate-100 min-h-screen font-sans flex flex-col antialiased selection:bg-flow-cyan selection:text-black">
 
-    <h1>🎬 FlowShorts AI Studio</h1>
+    <!-- Header -->
+    <header class="border-b border-flow-border bg-flow-bg/90 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl gradient-btn flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
+                    <i class="fa-solid fa-bolt text-xl"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl font-black tracking-tight gradient-text">FlowShorts AI Studio</span>
+                        <span class="text-[10px] bg-flow-cyan/10 text-flow-cyan px-2 py-0.5 rounded-full border border-flow-cyan/20 font-bold uppercase tracking-wider">v3.5 ElevenLabs Direct API</span>
+                    </div>
+                </div>
+            </div>
 
-    <div class="container">
-        <div class="controls">
-            <label for="apiKey">1. ElevenLabs API Raktas:</label>
-            <input type="password" id="apiKey" placeholder="Įklijuokite savo ElevenLabs API Key...">
+            <div class="flex items-center gap-3">
+                <span class="text-xs text-slate-400 inline-flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> xi-api-key Direct Engine
+                </span>
+            </div>
+        </div>
+    </header>
 
-            <label for="voiceSelect">2. Pasirinkite AI Balsą:</label>
-            <select id="voiceSelect">
-                <option value="JBFqnCBsd6RMkjVDRZzb">George (Gilus ir dramatiškas)</option>
-                <option value="pNInz6obpgDQGcFmaJgB">Adam (Deep & Storyteller)</option>
-                <option value="21m00Tcm4TlvDq8ikWAM">Rachel (Calm & Clear)</option>
-                <option value="ErXwobaYiN019PkySvjV">Antoni (Narrator)</option>
-            </select>
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- LEFT CONTROL PANEL (7 Cols) -->
+        <div class="lg:col-span-7 flex flex-col gap-6">
+            
+            <div class="glass-card rounded-2xl p-6 relative overflow-hidden shadow-2xl space-y-5">
+                <div class="absolute -top-16 -right-16 w-48 h-48 bg-flow-purple/20 rounded-full blur-3xl pointer-events-none glow-effect"></div>
 
-            <label for="bgFile">3. Fono Vaizdo Įrašas (.mp4) arba Nuotrauka:</label>
-            <input type="file" id="bgFile" accept="video/*,image/*">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                    <h2 class="text-base font-extrabold flex items-center gap-2.5">
+                        <span class="w-7 h-7 rounded-lg bg-flow-cyan/10 text-flow-cyan flex items-center justify-center text-xs font-black border border-flow-cyan/30">1</span>
+                        ElevenLabs API & Studio Settings
+                    </h2>
+                    <span class="text-[11px] text-amber-400 font-bold bg-amber-500/10 px-2.5 py-1 rounded-md border border-amber-500/20">
+                        <i class="fa-solid fa-shield-halved mr-1"></i> Direct xi-api-key Headers
+                    </span>
+                </div>
 
-            <label for="script">4. Video Tekstas / Scenarijus:</label>
-            <textarea id="script">The first move is what sets everything in motion.</textarea>
+                <!-- API Key Input -->
+                <div>
+                    <label class="text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1.5 flex items-center justify-between">
+                        <span>ElevenLabs API Key</span>
+                        <a href="https://elevenlabs.io" target="_blank" class="text-flow-cyan hover:underline normal-case text-[10px]">Get free key at ElevenLabs.io <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    </label>
+                    <div class="relative">
+                        <i class="fa-solid fa-key absolute left-3.5 top-3.5 text-slate-500 text-xs"></i>
+                        <input type="password" id="apiKey" placeholder="sk_... (Paste your ElevenLabs API Key)" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl py-2.5 pl-9 pr-3.5 text-xs text-slate-100 focus:outline-none focus:border-flow-cyan transition font-mono">
+                    </div>
+                </div>
 
-            <button id="generateBtn" onclick="generateShort()">⚡ Generuoti Shorts Video</button>
-            <div id="status" class="status"></div>
-            <a id="downloadBtn" download="flowshorts_video.webm"><button>⬇️ Atsisiųsti Paruoštą Video</button></a>
+                <!-- Voice Selection Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1.5 block">Select AI Voice</label>
+                        <select id="voiceSelect" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-flow-cyan transition font-semibold cursor-pointer">
+                            <option value="pNInz6obpgDQGcFmaJgB">Adam (Deep, Storyteller & Viral Shorts) - Recommended</option>
+                            <option value="JBFqnCBsd6RMkjVDRZzb">George (Warm, Deep & Dramatic)</option>
+                            <option value="21m00Tcm4TlvDq8ikWAM">Rachel (Calm, Professional & Clear)</option>
+                            <option value="ErXwobaYiN019PkySvjV">Antoni (Engaging Narrative Voice)</option>
+                            <option value="VR6AewLTigWG4xT3pm42">Arnold (Heavy & Intense)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1.5 block">Custom Background File</label>
+                        <input type="file" id="bgFileInput" accept="video/*,image/*" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl p-2 text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-flow-cyan/20 file:text-flow-cyan hover:file:bg-flow-cyan/30 cursor-pointer">
+                    </div>
+                </div>
+
+                <!-- Script Input -->
+                <div>
+                    <label class="text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1.5 block">Shorts Video Voiceover Script</label>
+                    <textarea id="scriptInput" rows="4" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 text-xs text-slate-100 focus:outline-none focus:border-flow-cyan transition placeholder-slate-600 resize-none font-medium leading-relaxed" placeholder="Type or paste your dramatic shorts story here...">Deep in the Pacific ocean lies the Mariana Trench, a place darker than outer space. Pressure at the bottom is over 1000 times greater than the surface. Scientists dropped an acoustic microphone and recorded terrifying unexplained oceanic sounds.</textarea>
+                </div>
+
+                <!-- Generate Action Button -->
+                <button onclick="generateShortVideo()" id="generateBtn" class="gradient-btn w-full py-4 px-6 rounded-xl font-extrabold text-xs text-white uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl cursor-pointer">
+                    <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+                    <span>Generate Complete Short Video</span>
+                </button>
+
+                <!-- Status Feedback Bar -->
+                <div id="statusBox" class="hidden p-3.5 rounded-xl text-xs font-bold flex items-center gap-2.5 transition">
+                    <i id="statusIcon" class="fa-solid fa-circle-notch animate-spin text-sm"></i>
+                    <span id="statusText">Initializing generation pipeline...</span>
+                </div>
+            </div>
+
+            <!-- Features Highlights -->
+            <div class="glass-card rounded-2xl p-5 grid grid-cols-3 gap-3 text-center">
+                <div class="p-3 bg-slate-900/40 rounded-xl border border-slate-800">
+                    <i class="fa-solid fa-bolt text-flow-cyan text-lg mb-1 block"></i>
+                    <span class="text-[11px] font-bold text-slate-300">Direct xi-api-key</span>
+                </div>
+                <div class="p-3 bg-slate-900/40 rounded-xl border border-slate-800">
+                    <i class="fa-solid fa-closed-captioning text-flow-yellow text-lg mb-1 block"></i>
+                    <span class="text-[11px] font-bold text-slate-300">CapCut Dynamic Captions</span>
+                </div>
+                <div class="p-3 bg-slate-900/40 rounded-xl border border-slate-800">
+                    <i class="fa-solid fa-video text-flow-purple text-lg mb-1 block"></i>
+                    <span class="text-[11px] font-bold text-slate-300">Live 9:16 Canvas Recording</span>
+                </div>
+            </div>
+
         </div>
 
-        <div class="preview">
-            <h3>9:16 Vertikalus Peržiūros Langas</h3>
-            <canvas id="videoCanvas" width="1080" height="1920" style="margin-top:15px;"></canvas>
+        <!-- RIGHT STUDIO PLAYER (5 Cols) -->
+        <div class="lg:col-span-5 flex flex-col gap-6">
+            
+            <div class="glass-card rounded-2xl p-6 sticky top-20 flex flex-col items-center shadow-2xl">
+                <div class="w-full flex items-center justify-between mb-4">
+                    <h2 class="text-xs font-extrabold flex items-center gap-2">
+                        <i class="fa-solid fa-mobile-screen-button text-flow-cyan"></i>
+                        Live Studio Player (9:16 TikTok Format)
+                    </h2>
+                    <span id="canvasBadge" class="text-[10px] bg-slate-900 text-flow-cyan px-2.5 py-1 rounded-full font-mono border border-slate-800 font-bold">1080 x 1920</span>
+                </div>
+
+                <!-- 9:16 Shorts Canvas Container -->
+                <div class="relative w-full max-w-[280px] aspect-[9/16] bg-black rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-800 group">
+                    
+                    <!-- Main Live Animation Canvas -->
+                    <canvas id="videoCanvas" width="1080" height="1920" class="relative z-10 w-full h-full object-cover"></canvas>
+
+                    <!-- Status Overlay Badge -->
+                    <div class="absolute top-3 left-3 z-20 bg-black/70 backdrop-blur px-2.5 py-1 rounded-lg border border-white/10 text-[10px] font-bold text-slate-200 flex items-center gap-1.5">
+                        <span id="liveStatusDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span id="liveStatusText">Ready</span>
+                    </div>
+                </div>
+
+                <!-- Download Output Area -->
+                <div class="w-full mt-6 space-y-3 border-t border-slate-800/80 pt-5">
+                    <a id="downloadLink" download="FlowShort_ElevenLabs.webm" class="hidden w-full">
+                        <button class="w-full py-3.5 px-5 bg-emerald-600 hover:bg-emerald-500 font-extrabold text-xs rounded-xl text-white transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/40 cursor-pointer">
+                            <i class="fa-solid fa-download text-sm"></i>
+                            Download Generated Video (.webm)
+                        </button>
+                    </a>
+                </div>
+
+            </div>
+
         </div>
-    </div>
+
+    </main>
+
+    <!-- Hidden background element holder for video playback -->
+    <video id="bgVideoElement" class="hidden" loop muted playsinline></video>
 
     <script>
+        // DOM Elements
         const canvas = document.getElementById('videoCanvas');
         const ctx = canvas.getContext('2d');
-        let bgMedia = null;
-        let isVideo = false;
+        const apiKeyInput = document.getElementById('apiKey');
+        const voiceSelect = document.getElementById('voiceSelect');
+        const bgFileInput = document.getElementById('bgFileInput');
+        const scriptInput = document.getElementById('scriptInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const statusBox = document.getElementById('statusBox');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusText = document.getElementById('statusText');
+        const downloadLink = document.getElementById('downloadLink');
+        const liveStatusText = document.getElementById('liveStatusText');
+        const bgVideoElement = document.getElementById('bgVideoElement');
 
-        document.getElementById('bgFile').addEventListener('change', function(e) {
+        // State Variables
+        let customMedia = null;
+        let isVideoMedia = false;
+        let renderAnimationId = null;
+
+        // Custom Background Upload Handler
+        bgFileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
             const url = URL.createObjectURL(file);
             if (file.type.startsWith('video/')) {
-                bgMedia = document.createElement('video');
-                bgMedia.src = url;
-                bgMedia.loop = true;
-                bgMedia.muted = true;
-                bgMedia.playsInline = true;
-                bgMedia.onloadedmetadata = () => {
-                    bgMedia.play().catch(e => console.log(e));
+                bgVideoElement.src = url;
+                bgVideoElement.onloadedmetadata = () => {
+                    bgVideoElement.play().catch(err => console.log('Video play error:', err));
                 };
-                isVideo = true;
+                customMedia = bgVideoElement;
+                isVideoMedia = true;
             } else {
-                bgMedia = new Image();
-                bgMedia.src = url;
-                isVideo = false;
+                const img = new Image();
+                img.src = url;
+                img.onload = () => {
+                    customMedia = img;
+                    isVideoMedia = false;
+                    drawCanvasFrame(0, "PREVIEW", 0.5);
+                };
             }
         });
 
-        // ElevenLabs įgarsinimo funkcija naudojant jūsų pateiktą kodo struktūrą
-        async function fetchElevenLabsAudio(text, apiKey, voiceId) {
-            // Inicializuojame ElevenLabs klientą
-            const client = new ElevenLabs.ElevenLabsClient({ apiKey: apiKey });
-
-            // Kviečiame konvertavimo metodą pagal jūsų pavyzdį
-            const audioStream = await client.textToSpeech.convert(voiceId, {
-                text: text,
-                modelId: 'eleven_multilingual_v2',
-                outputFormat: 'mp3_44100_128'
-            });
-
-            // Stream duomenų konvertavimas į naršyklei tinkamą Blob / URL
-            const reader = audioStream.getReader();
-            const chunks = [];
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                chunks.push(value);
+        // Show UI Status
+        function updateStatus(message, type = 'info') {
+            statusBox.classList.remove('hidden', 'bg-red-500/10', 'text-red-400', 'border-red-500/20', 'bg-emerald-500/10', 'text-emerald-400', 'border-emerald-500/20', 'bg-slate-900', 'text-amber-400', 'border-slate-800');
+            
+            if (type === 'error') {
+                statusBox.classList.add('bg-red-500/10', 'text-red-400', 'border', 'border-red-500/20');
+                statusIcon.className = 'fa-solid fa-triangle-exclamation text-sm';
+            } else if (type === 'success') {
+                statusBox.classList.add('bg-emerald-500/10', 'text-emerald-400', 'border', 'border-emerald-500/20');
+                statusIcon.className = 'fa-solid fa-circle-check text-sm';
+            } else {
+                statusBox.classList.add('bg-slate-900', 'text-amber-400', 'border', 'border-slate-800');
+                statusIcon.className = 'fa-solid fa-circle-notch animate-spin text-sm';
             }
 
-            const blob = new Blob(chunks, { type: 'audio/mp3' });
-            return URL.createObjectURL(blob);
+            statusText.innerText = message;
         }
 
-        async function generateShort() {
-            const scriptText = document.getElementById('script').value.trim();
-            const apiKey = document.getElementById('apiKey').value.trim();
-            const voiceId = document.getElementById('voiceSelect').value;
-            const status = document.getElementById('status');
-            const downloadBtn = document.getElementById('downloadBtn');
+        // Direct ElevenLabs API Fetch (No SDK dependency)
+        async function fetchElevenLabsSpeech(text, apiKey, voiceId) {
+            const cleanKey = apiKey.trim();
+            const cleanVoice = voiceId.trim();
 
-            if (!scriptText) return alert("Įveskite tekstą!");
-            if (!apiKey) return alert("Prašome įvesti ElevenLabs API Raktą!");
+            const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${cleanVoice}`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'audio/mpeg',
+                    'Content-Type': 'application/json',
+                    'xi-api-key': cleanKey
+                },
+                body: JSON.stringify({
+                    text: text,
+                    model_id: "eleven_multilingual_v2",
+                    voice_settings: {
+                        stability: 0.5,
+                        similarity_boost: 0.75
+                    }
+                })
+            });
 
-            if (isVideo && bgMedia) {
-                try { await bgMedia.play(); } catch(e) {}
+            if (!response.ok) {
+                const errJson = await response.json().catch(() => ({}));
+                const errMsg = errJson?.detail?.message || `ElevenLabs API Error: ${response.status} ${response.statusText}`;
+                throw new Error(errMsg);
             }
 
-            downloadBtn.style.display = 'none';
-            status.innerText = "🎙️ Generuojamas ElevenLabs AI balsas...";
+            const audioBlob = await response.blob();
+            return URL.createObjectURL(audioBlob);
+        }
 
-            let audioUrl;
-            try {
-                audioUrl = await fetchElevenLabsAudio(scriptText, apiKey, voiceId);
-            } catch (err) {
-                console.error(err);
-                status.innerText = "❌ Klaida: Patikrinkite API Raktą arba konsolę.";
+        // Drawing Motion Background and Visuals
+        function drawCanvasFrame(time, activeText, progress) {
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // 1. Render Background (Uploaded File or Dynamic Procedural Animation)
+            if (customMedia) {
+                if (isVideoMedia && bgVideoElement.readyState >= 2) {
+                    ctx.drawImage(bgVideoElement, 0, 0, w, h);
+                } else if (!isVideoMedia) {
+                    ctx.drawImage(customMedia, 0, 0, w, h);
+                }
+            } else {
+                // Dynamic Procedural Radial Particle Background
+                const grad = ctx.createRadialGradient(w / 2, h / 2, 100, w / 2, h / 2, w * 0.9);
+                grad.addColorStop(0, '#0284c7');
+                grad.addColorStop(0.5, '#3b0764');
+                grad.addColorStop(1, '#07090e');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, w, h);
+
+                // Floating Glowing Bokeh
+                for (let i = 0; i < 25; i++) {
+                    const px = (Math.sin(i * 123 + time * 0.8) * 0.5 + 0.5) * w;
+                    const py = (Math.cos(i * 45 + time * 0.5) * 0.5 + 0.5) * h;
+                    const rad = (Math.sin(i + time * 2) + 2) * 20;
+
+                    ctx.beginPath();
+                    ctx.arc(px, py, rad, 0, Math.PI * 2);
+                    ctx.fillStyle = i % 2 === 0 ? 'rgba(0, 242, 254, 0.2)' : 'rgba(250, 204, 21, 0.15)';
+                    ctx.fill();
+                }
+            }
+
+            // Dark Overlay Vignette for Subtitle Contrast
+            const vignette = ctx.createRadialGradient(w / 2, h / 2, h * 0.35, w / 2, h / 2, h * 0.75);
+            vignette.addColorStop(0, 'rgba(0,0,0,0.2)');
+            vignette.addColorStop(1, 'rgba(0,0,0,0.85)');
+            ctx.fillStyle = vignette;
+            ctx.fillRect(0, 0, w, h);
+
+            // 2. CapCut Style Dynamic Auto-Wrapping Subtitles
+            if (activeText) {
+                drawCapcutSubtitles(activeText);
+            }
+        }
+
+        // Auto-fitting, non-overflowing CapCut / Hormozi Subtitles Engine
+        function drawCapcutSubtitles(text) {
+            ctx.save();
+
+            const maxWidth = canvas.width - 160;
+            let fontSize = 72;
+            ctx.font = `900 ${fontSize}px "Plus Jakarta Sans", sans-serif`;
+
+            // Auto-scale font size if text is wide
+            while (ctx.measureText(text).width > maxWidth && fontSize > 36) {
+                fontSize -= 4;
+                ctx.font = `900 ${fontSize}px "Plus Jakarta Sans", sans-serif`;
+            }
+
+            const textMetrics = ctx.measureText(text);
+            const textWidth = textMetrics.width;
+            const lineY = canvas.height * 0.68;
+            const boxPaddingX = 40;
+            const boxHeight = fontSize * 1.6;
+            const boxWidth = textWidth + (boxPaddingX * 2);
+
+            // Subtitle Dark Badge Background
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.88)';
+            ctx.beginPath();
+            ctx.roundRect(canvas.width / 2 - boxWidth / 2, lineY - (boxHeight / 2), boxWidth, boxHeight, 24);
+            ctx.fill();
+
+            // Accent Yellow Border
+            ctx.strokeStyle = '#facc15';
+            ctx.lineWidth = 6;
+            ctx.stroke();
+
+            // Render Subtitle Text with Outline
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Black Stroke
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 14;
+            ctx.strokeText(text, canvas.width / 2, lineY);
+
+            // Main White Fill
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(text, canvas.width / 2, lineY);
+
+            ctx.restore();
+        }
+
+        // Main Video Generation Pipeline
+        async function generateShortVideo() {
+            const apiKey = apiKeyInput.value.trim();
+            const voiceId = voiceSelect.value;
+            const scriptText = scriptInput.value.trim();
+
+            if (!apiKey) {
+                updateStatus("Please enter your ElevenLabs API Key first!", "error");
+                return;
+            }
+            if (!scriptText) {
+                updateStatus("Please enter a voiceover script!", "error");
                 return;
             }
 
-            const audio = new Audio(audioUrl);
-            await new Promise(resolve => audio.onloadedmetadata = resolve);
-
-            // Garso nukreipimas į vaizdo įrašymo srautą
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const source = audioCtx.createMediaElementSource(audio);
-            const dest = audioCtx.createMediaStreamDestination();
-            source.connect(dest);
-            source.connect(audioCtx.destination);
-
-            const canvasStream = canvas.captureStream(30);
-            const combinedStream = new MediaStream([
-                ...canvasStream.getVideoTracks(),
-                ...dest.stream.getAudioTracks()
-            ]);
-
-            // Teksto dalinimas į trumpas frazes (3 žodžiai)
-            const allWords = scriptText.toUpperCase().split(/\s+/);
-            const chunks = [];
-            let currentChunk = [];
-
-            for (let i = 0; i < allWords.length; i++) {
-                currentChunk.push(allWords[i]);
-                if (currentChunk.length >= 3 || i === allWords.length - 1) {
-                    chunks.push(currentChunk.join(" "));
-                    currentChunk = [];
-                }
-            }
-
-            let mediaRecorder;
-            const recordedChunks = [];
+            generateBtn.disabled = true;
+            generateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            downloadLink.classList.add('hidden');
+            liveStatusText.innerText = "Generating Speech...";
 
             try {
-                mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm' });
-            } catch(e) {
-                mediaRecorder = new MediaRecorder(combinedStream);
-            }
+                updateStatus("🎙️ Requesting speech synthesis from ElevenLabs API...");
+                
+                // 1. Fetch ElevenLabs Speech Audio
+                const audioUrl = await fetchElevenLabsSpeech(scriptText, apiKey, voiceId);
+                
+                updateStatus("🔊 Audio generated! Preparing media streams...");
+                
+                const audio = new Audio(audioUrl);
+                await new Promise(resolve => audio.onloadedmetadata = resolve);
 
-            mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
-            mediaRecorder.onstop = () => {
-                const blob = new Blob(recordedChunks, { type: 'video/webm' });
-                downloadBtn.href = URL.createObjectURL(blob);
-                downloadBtn.style.display = 'block';
-                status.innerText = "✅ Video sugeneruotas sėkmingai!";
-            };
+                // 2. Setup Web Audio API Node for Stream Capture
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioCtx.createMediaElementSource(audio);
+                const audioDest = audioCtx.createMediaStreamDestination();
+                source.connect(audioDest);
+                source.connect(audioCtx.destination);
 
-            mediaRecorder.start();
-            audio.play();
-            status.innerText = "🎥 Įrašomas vaizdas ir garsas...";
+                // 3. Combine Canvas Stream + Web Audio Stream
+                const canvasStream = canvas.captureStream(30);
+                const combinedStream = new MediaStream([
+                    ...canvasStream.getVideoTracks(),
+                    ...audioDest.stream.getAudioTracks()
+                ]);
 
-            const audioDuration = audio.duration;
-            const startTime = Date.now();
+                // 4. Parse text into 3-word chunks for CapCut timing
+                const words = scriptText.toUpperCase().split(/\s+/);
+                const chunks = [];
+                let current = [];
 
-            function render() {
-                const elapsed = (Date.now() - startTime) / 1000;
-                const progress = Math.min(elapsed / audioDuration, 0.99);
-                const currentChunkIdx = Math.floor(progress * chunks.length);
-                const activeText = chunks[currentChunkIdx] || chunks[chunks.length - 1];
-
-                // Fonas
-                if (bgMedia) {
-                    if (isVideo && bgMedia.readyState >= 2) {
-                        ctx.drawImage(bgMedia, 0, 0, canvas.width, canvas.height);
-                    } else if (!isVideo) {
-                        ctx.drawImage(bgMedia, 0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < words.length; i++) {
+                    current.push(words[i]);
+                    if (current.length >= 3 || i === words.length - 1) {
+                        chunks.push(current.join(" "));
+                        current = [];
                     }
-                } else {
-                    let grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-                    grad.addColorStop(0, '#0f172a');
-                    grad.addColorStop(1, '#1e1b4b');
-                    ctx.fillStyle = grad;
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
                 }
 
-                // Tamsinimas
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                // Dinaminiai Subtitrai
-                const maxWidth = canvas.width - 120;
-                let fontSize = 70;
-                ctx.font = `900 ${fontSize}px Arial, sans-serif`;
-
-                while (ctx.measureText(activeText).width > maxWidth && fontSize > 35) {
-                    fontSize -= 5;
-                    ctx.font = `900 ${fontSize}px Arial, sans-serif`;
+                // 5. Setup MediaRecorder
+                let mediaRecorder;
+                const recordedChunks = [];
+                try {
+                    mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm;codecs=vp9' });
+                } catch(e) {
+                    mediaRecorder = new MediaRecorder(combinedStream);
                 }
 
-                const textWidth = ctx.measureText(activeText).width;
-                const boxWidth = textWidth + 80;
-                const boxHeight = fontSize * 1.8;
+                mediaRecorder.ondataavailable = e => {
+                    if (e.data.size > 0) recordedChunks.push(e.data);
+                };
 
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
-                ctx.beginPath();
-                ctx.roundRect((canvas.width - boxWidth) / 2, canvas.height / 2 - (boxHeight / 2), boxWidth, boxHeight, 16);
-                ctx.fill();
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    const downloadUrl = URL.createObjectURL(blob);
+                    downloadLink.href = downloadUrl;
+                    downloadLink.classList.remove('hidden');
+                    updateStatus("✅ Short Video generated & ready for download!", "success");
+                    liveStatusText.innerText = "Completed";
+                    
+                    generateBtn.disabled = false;
+                    generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                };
 
-                ctx.lineWidth = 5;
-                ctx.strokeStyle = '#facc15';
-                ctx.stroke();
-
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-
-                ctx.lineWidth = 8;
-                ctx.strokeStyle = '#000000';
-                ctx.strokeText(activeText, canvas.width / 2, canvas.height / 2);
-
-                ctx.fillStyle = '#ffffff';
-                ctx.fillText(activeText, canvas.width / 2, canvas.height / 2);
-
-                if (!audio.ended && elapsed < audioDuration + 0.5) {
-                    requestAnimationFrame(render);
-                } else {
-                    mediaRecorder.stop();
+                // 6. Start Playback & Recording
+                if (isVideoMedia && bgVideoElement) {
+                    bgVideoElement.currentTime = 0;
+                    bgVideoElement.play().catch(e => console.log(e));
                 }
+
+                mediaRecorder.start();
+                audio.play();
+                liveStatusText.innerText = "Recording Canvas...";
+                updateStatus("🎥 Recording live 9:16 Shorts video stream...");
+
+                const totalDuration = audio.duration;
+                const startTime = Date.now();
+
+                function renderLoop() {
+                    const elapsed = (Date.now() - startTime) / 1000;
+                    const progress = Math.min(elapsed / totalDuration, 0.99);
+                    const chunkIdx = Math.floor(progress * chunks.length);
+                    const activeText = chunks[chunkIdx] || chunks[chunks.length - 1];
+
+                    drawCanvasFrame(elapsed, activeText, progress);
+
+                    if (!audio.ended && elapsed < totalDuration + 0.5) {
+                        renderAnimationId = requestAnimationFrame(renderLoop);
+                    } else {
+                        cancelAnimationFrame(renderAnimationId);
+                        if (mediaRecorder.state !== 'inactive') {
+                            mediaRecorder.stop();
+                        }
+                    }
+                }
+
+                renderLoop();
+
+            } catch (err) {
+                console.error("Studio Generation Error:", err);
+                updateStatus(err.message || "Failed to generate video.", "error");
+                liveStatusText.innerText = "Error";
+                generateBtn.disabled = false;
+                generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             }
-
-            render();
         }
+
+        // Initial Canvas Preview Frame
+        window.onload = () => {
+            drawCanvasFrame(0, "FLOWSHORTS STUDIO", 0.5);
+        };
     </script>
 </body>
 </html>
