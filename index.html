@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Viral Shorts Creator</title>
+    <title>AI Shorts Video Creator</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #0b0f19; color: #f8fafc; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
-        h1 { margin-bottom: 20px; color: #38bdf8; text-align: center; }
+        h1 { margin-bottom: 20px; color: #38bdf8; text-align: center; font-size: 26px; }
         .container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 1000px; width: 100%; justify-content: center; }
         .controls { flex: 1; min-width: 320px; background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
         .preview { flex: 1; min-width: 320px; display: flex; flex-direction: column; align-items: center; background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
@@ -31,7 +31,7 @@
 
             <button id="generateBtn" onclick="autoGenerateShort()">🚀 Generate Short Video</button>
             <div id="status" class="status"></div>
-            <a id="downloadBtn" download="auto_short.webm"><button style="background:#16a34a;">⬇️ Download Video</button></a>
+            <a id="downloadBtn" download="viral_short.webm"><button style="background:#16a34a;">⬇️ Download Video</button></a>
         </div>
 
         <div class="preview">
@@ -40,16 +40,24 @@
         </div>
     </div>
 
-    <!-- Preloaded Fallback Background Video -->
-    <video id="bgVideo" loop muted playsinline style="display:none;" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"></video>
-
     <script>
         const canvas = document.getElementById('videoCanvas');
         const ctx = canvas.getContext('2d');
-        const bgVideo = document.getElementById('bgVideo');
         let animationId;
+        let particles = [];
 
-        async function autoGenerateShort() {
+        // Initialize background dynamic particles
+        for(let i = 0; i < 40; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 8 + 2,
+                speedY: Math.random() * 1.5 + 0.5,
+                opacity: Math.random() * 0.5 + 0.3
+            });
+        }
+
+        function autoGenerateShort() {
             const scriptText = document.getElementById('script').value;
             const status = document.getElementById('status');
             const downloadBtn = document.getElementById('downloadBtn');
@@ -57,23 +65,14 @@
 
             if (!scriptText) return alert("Please enter text!");
 
-            status.innerText = "⏳ Loading background media & preparing canvas...";
-
-            // Ensure video plays properly
-            try {
-                await bgVideo.play();
-            } catch (e) {
-                console.log("Video autoplay forced: ", e);
-            }
-
-            status.innerText = "🎙️ Synthesizing Voice & Generating Video...";
-
             // Break script into sentences
             const sentences = scriptText.match(/[^.!?]+[.!?]+/g) || [scriptText];
+            
+            status.innerText = "🎙️ Playing Voice & Generating Video...";
 
-            // Speech Synthesis
+            // Setup speech
             const synth = window.speechSynthesis;
-            synth.cancel(); // Reset any ongoing speech
+            synth.cancel();
 
             const utterance = new SpeechSynthesisUtterance(scriptText);
             const voices = synth.getVoices().filter(v => v.lang.startsWith('en'));
@@ -83,14 +82,14 @@
             utterance.pitch = 0.9;
             utterance.rate = 0.95;
 
-            // Media Recording Setup
+            // Setup Recording Stream
             const canvasStream = canvas.captureStream(30);
             let mediaRecorder;
             const chunks = [];
 
             try {
                 mediaRecorder = new MediaRecorder(canvasStream, { mimeType: 'video/webm' });
-            } catch (err) {
+            } catch (e) {
                 mediaRecorder = new MediaRecorder(canvasStream);
             }
 
@@ -104,58 +103,58 @@
 
             mediaRecorder.start();
 
-            let currentSentenceIndex = 0;
-            utterance.onboundary = (event) => {
-                if (event.name === 'sentence' || event.name === 'word') {
-                    const progress = event.charIndex / scriptText.length;
-                    currentSentenceIndex = Math.min(Math.floor(progress * sentences.length), sentences.length - 1);
-                }
-            };
-
-            utterance.onend = () => {
-                setTimeout(() => {
-                    mediaRecorder.stop();
-                    cancelAnimationFrame(animationId);
-                }, 800);
-            };
+            const totalDuration = Math.max(sentences.length * 3.5, 10); // estimated seconds
+            const startTime = Date.now();
 
             synth.speak(utterance);
 
-            // Frame Render Loop
+            // Render loop with dynamic timer-based scene switching
             function render() {
-                // 1. Draw Background Video or Gradient Fallback
-                if (bgVideo.readyState >= 2) {
-                    ctx.drawImage(bgVideo, 0, 0, canvas.width, canvas.height);
-                } else {
-                    // Fallback animated dark blue gradient if video is still buffering
-                    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                    grad.addColorStop(0, '#0f172a');
-                    grad.addColorStop(1, '#1e1b4b');
-                    ctx.fillStyle = grad;
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                }
+                const elapsed = (Date.now() - startTime) / 1000;
+                
+                // Determine current sentence based on time
+                const sceneDuration = 3.5; // seconds per sentence
+                const currentIdx = Math.min(Math.floor(elapsed / sceneDuration), sentences.length - 1);
+                const currentText = sentences[currentIdx].trim();
 
-                // 2. Dark Overlay Vignette
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+                // 1. Draw Dynamic Moving Gradient Background
+                const hue = (elapsed * 15) % 360;
+                const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                grad.addColorStop(0, `hsl(${hue}, 40%, 8%)`);
+                grad.addColorStop(1, `hsl(${(hue + 40) % 360}, 50%, 15%)`);
+                ctx.fillStyle = grad;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // 3. Subtitle Card Background
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.82)';
+                // 2. Animate Dynamic Particles
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.6)';
+                particles.forEach(p => {
+                    p.y -= p.speedY;
+                    if(p.y < 0) p.y = canvas.height;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                // 3. Subtitle Box Frame
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
                 ctx.beginPath();
-                ctx.roundRect(80, canvas.height / 2 - 180, canvas.width - 160, 360, 24);
+                ctx.roundRect(80, canvas.height / 2 - 200, canvas.width - 160, 400, 24);
                 ctx.fill();
 
                 // 4. Draw Subtitle Text
                 ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 60px Arial';
+                ctx.font = 'bold 58px Arial';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
 
-                const currentText = (sentences[currentSentenceIndex] || scriptText).trim();
                 wrapAndHighlightText(ctx, currentText, canvas.width / 2, canvas.height / 2, canvas.width - 220, 75);
 
-                if (synth.speaking) {
+                if (elapsed < totalDuration && (synth.speaking || elapsed < sentences.length * 3.5)) {
                     animationId = requestAnimationFrame(render);
+                } else {
+                    synth.cancel();
+                    mediaRecorder.stop();
+                    cancelAnimationFrame(animationId);
                 }
             }
 
