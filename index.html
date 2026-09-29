@@ -3,59 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free AI Short Video Generator</title>
+    <title>Pro AI Shorts Generator</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #0f172a; color: #f8fafc; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
-        h1 { margin-bottom: 20px; color: #38bdf8; text-align: center; }
-        .container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 1000px; width: 100%; justify-content: center; }
-        .controls { flex: 1; min-width: 300px; background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
-        .preview { flex: 1; min-width: 300px; display: flex; flex-direction: column; align-items: center; background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
-        label { display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold; color: #94a3b8; }
-        textarea, select, input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; font-size: 14px; }
-        textarea { height: 100px; resize: vertical; }
-        button { width: 100%; margin-top: 20px; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', sans-serif; }
+        body { background: #090d16; color: #f8fafc; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
+        h1 { margin-bottom: 20px; color: #38bdf8; text-align: center; font-size: 28px; }
+        .container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 1050px; width: 100%; justify-content: center; }
+        .controls { flex: 1; min-width: 320px; background: #131c2e; padding: 25px; border-radius: 16px; border: 1px solid #1e293b; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .preview { flex: 1; min-width: 320px; display: flex; flex-direction: column; align-items: center; background: #131c2e; padding: 25px; border-radius: 16px; border: 1px solid #1e293b; }
+        label { display: block; margin-top: 15px; margin-bottom: 6px; font-weight: 600; color: #38bdf8; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+        textarea, select, input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0b1120; color: #fff; font-size: 14px; }
+        textarea { height: 110px; resize: vertical; }
+        button { width: 100%; margin-top: 20px; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 14px rgba(37,99,235,0.4); }
         button:hover { background: #1d4ed8; }
-        canvas { border-radius: 8px; border: 2px solid #38bdf8; max-width: 270px; max-height: 480px; width: 100%; height: auto; background: #000; }
-        #downloadBtn { background: #16a34a; display: none; margin-top: 10px; }
+        canvas { border-radius: 12px; border: 3px solid #38bdf8; max-width: 300px; max-height: 533px; width: 100%; height: auto; background: #000; box-shadow: 0 0 20px rgba(56,189,248,0.2); }
+        #downloadBtn { background: #16a34a; display: none; margin-top: 15px; box-shadow: 0 4px 14px rgba(22,163,74,0.4); }
         #downloadBtn:hover { background: #15803d; }
-        .status { margin-top: 10px; font-size: 14px; color: #f59e0b; text-align: center; }
+        .status { margin-top: 12px; font-size: 14px; color: #f59e0b; text-align: center; font-weight: 600; }
     </style>
 </head>
 <body>
 
-    <h1>🎬 Free YouTube Short Generator</h1>
+    <h1>🎬 Pro YouTube Shorts Creator</h1>
 
     <div class="container">
-        <!-- Controls Panel -->
         <div class="controls">
-            <label for="script">Script (English):</label>
-            <textarea id="script" placeholder="Enter your text script here... Example: Did you know that space is completely silent? There is no atmosphere in space.">Did you know that space is completely silent? Because there is no atmosphere, sound has no medium or way to travel.</textarea>
+            <label for="topic">Search Keyword for Images:</label>
+            <input type="text" id="topic" value="ocean underwater ship" placeholder="e.g. ocean, space, history, dark forest">
+
+            <label for="script">Story Script (English):</label>
+            <textarea id="script">Did you know about the unbelievable true story of Harrison Okene? In 2013, a tugboat capsized in the Atlantic Ocean, sinking 100 feet deep. Harrison was trapped inside the dark sunken ship for three days. Miraculously, he survived in a tiny air pocket and was rescued alive!</textarea>
 
             <label for="voiceSelect">Select Voice:</label>
             <select id="voiceSelect"></select>
 
-            <label for="bgType">Background:</label>
-            <select id="bgType" onchange="toggleBgOption()">
-                <option value="animated">Animated Cyber-Grid (Built-in)</option>
-                <option value="custom">Upload your MP4 / Video</option>
-            </select>
-
-            <div id="fileUploadContainer" style="display: none;">
-                <label for="bgVideoInput">Upload MP4 Video (9:16 recommended):</label>
-                <input type="file" id="bgVideoInput" accept="video/mp4,video/webm">
-            </div>
-
-            <button id="generateBtn" onclick="startGeneration()">⚡ Generate & Render Short</button>
+            <button id="generateBtn" onclick="startGeneration()">⚡ Generate Shorts Video</button>
             <div id="status" class="status"></div>
-            <a id="downloadBtn" download="short_video.webm"><button>⬇️ Download Video</button></a>
+            <a id="downloadBtn" download="short_story.webm"><button>⬇️ Download HD Video</button></a>
         </div>
 
-        <!-- Preview Panel -->
         <div class="preview">
-            <h3>Preview (9:16 Aspect Ratio)</h3>
+            <h3>Vertical Preview (9:16)</h3>
             <canvas id="videoCanvas" width="1080" height="1920"></canvas>
-            <video id="userVideo" loop muted style="display:none;"></video>
         </div>
     </div>
 
@@ -65,11 +54,11 @@
         const voiceSelect = document.getElementById('voiceSelect');
         const canvas = document.getElementById('videoCanvas');
         const ctx = canvas.getContext('2d');
-        let bgAnimationId;
+        let fetchedImages = [];
+        let animationFrameId;
 
-        // Load English Voices
         function populateVoiceList() {
-            voices = synth.getVoices().filter(voice => voice.lang.startsWith('en'));
+            voices = synth.getVoices().filter(v => v.lang.startsWith('en'));
             voiceSelect.innerHTML = '';
             voices.forEach((voice, index) => {
                 const option = document.createElement('option');
@@ -84,69 +73,49 @@
             speechSynthesis.onvoiceschanged = populateVoiceList;
         }
 
-        function toggleBgOption() {
-            const type = document.getElementById('bgType').value;
-            document.getElementById('fileUploadContainer').style.display = type === 'custom' ? 'block' : 'none';
+        // Fetch auto-changing background images from Unsplash
+        async function fetchTopicImages(keyword) {
+            const urls = [
+                `https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1080&q=80`,
+                `https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1080&q=80`,
+                `https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1080&q=80`,
+                `https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1080&q=80`
+            ];
+            
+            const loadedImages = [];
+            for (let url of urls) {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = url;
+                await new Promise(r => img.onload = r);
+                loadedImages.push(img);
+            }
+            return loadedImages;
         }
 
-        // Custom Background Video Handler
-        document.getElementById('bgVideoInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const url = URL.createObjectURL(file);
-                const userVideo = document.getElementById('userVideo');
-                userVideo.src = url;
-                userVideo.play();
-            }
-        });
-
-        // Background Animation (Fallback)
-        let hue = 0;
-        function drawAnimatedBg() {
-            hue = (hue + 0.5) % 360;
-            ctx.fillStyle = `hsl(${hue}, 40%, 10%)`;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Draw grid
-            ctx.strokeStyle = `hsl(${hue}, 60%, 30%)`;
-            ctx.lineWidth = 4;
-            const size = 120;
-            for (let x = 0; x < canvas.width; x += size) {
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, canvas.height);
-                ctx.stroke();
-            }
-            for (let y = 0; y < canvas.height; y += size) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(canvas.width, y);
-                ctx.stroke();
-            }
-        }
-
-        // Main Generator
         async function startGeneration() {
             const scriptText = document.getElementById('script').value;
+            const topic = document.getElementById('topic').value || 'nature';
             const status = document.getElementById('status');
             const downloadBtn = document.getElementById('downloadBtn');
             downloadBtn.style.display = 'none';
 
-            if (!scriptText) {
-                alert('Please enter a script text!');
-                return;
-            }
+            if (!scriptText) return alert('Enter a script!');
 
-            status.innerText = "🔊 Generating voice and rendering video...";
+            status.innerText = "🖼️ Loading background images...";
+            fetchedImages = await fetchTopicImages(topic);
 
-            // Setup Audio Stream
+            status.innerText = "🎙️ Synthesizing Voice & Rendering Video...";
+
+            // Break script into short chunks (word groups for dynamic subtitles)
+            const sentences = scriptText.match(/[^.!?]+[.!?]+/g) || [scriptText];
+            
             const selectedVoiceIndex = voiceSelect.selectedOptions[0]?.getAttribute('data-index');
             const utterance = new SpeechSynthesisUtterance(scriptText);
-            if (voices[selectedVoiceIndex]) {
-                utterance.voice = voices[selectedVoiceIndex];
-            }
+            if (voices[selectedVoiceIndex]) utterance.voice = voices[selectedVoiceIndex];
+            
+            utterance.rate = 1.0;
 
-            // Setup Video Stream & Media Recorder
             const canvasStream = canvas.captureStream(30);
             const mediaRecorder = new MediaRecorder(canvasStream, { mimeType: 'video/webm' });
             const chunks = [];
@@ -154,61 +123,77 @@
             mediaRecorder.ondataavailable = e => chunks.push(e.data);
             mediaRecorder.onstop = () => {
                 const blob = new Blob(chunks, { type: 'video/webm' });
-                const videoURL = URL.createObjectURL(blob);
-                downloadBtn.href = videoURL;
+                downloadBtn.href = URL.createObjectURL(blob);
                 downloadBtn.style.display = 'block';
-                status.innerText = "✅ Done! Click below to download.";
+                status.innerText = "✅ Shorts Ready! Click Download below.";
             };
 
             mediaRecorder.start();
+            synth.cancel();
 
-            // Speech Synthesis Handling
-            synth.cancel(); // Reset
+            let startTime = Date.now();
+            let currentSentenceIndex = 0;
             
+            // Sentence timing tracking
             utterance.onboundary = (event) => {
-                // Highlighting or word-sync could go here
+                if (event.name === 'sentence' || event.name === 'word') {
+                    const progress = event.charIndex / scriptText.length;
+                    currentSentenceIndex = Math.floor(progress * sentences.length);
+                }
             };
 
             utterance.onend = () => {
                 setTimeout(() => {
                     mediaRecorder.stop();
-                    cancelAnimationFrame(bgAnimationId);
-                }, 1000);
+                    cancelAnimationFrame(animationFrameId);
+                }, 800);
             };
 
             synth.speak(utterance);
 
-            // Render Frame Loop
-            const userVideo = document.getElementById('userVideo');
-            const bgType = document.getElementById('bgType').value;
+            // Render loop with image slideshow and highlighted text
+            function render() {
+                const elapsed = (Date.now() - startTime) / 1000;
+                
+                // Switch image every 3.5 seconds
+                const imgIndex = Math.floor(elapsed / 3.5) % fetchedImages.length;
+                const currentImg = fetchedImages[imgIndex];
 
-            function renderFrame() {
-                if (bgType === 'custom' && userVideo.currentTime) {
-                    ctx.drawImage(userVideo, 0, 0, canvas.width, canvas.height);
-                } else {
-                    drawAnimatedBg();
-                }
+                // Draw Background Image
+                ctx.drawImage(currentImg, 0, 0, canvas.width, canvas.height);
 
-                // Render Subtitles Text Overlay
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-                ctx.fillRect(80, canvas.height / 2 - 200, canvas.width - 160, 400);
+                // Dark Overlay for Contrast
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 52px Arial';
+                // Subtitle Box
+                const currentText = sentences[Math.min(currentSentenceIndex, sentences.length - 1)] || scriptText;
+                
+                ctx.fillStyle = '#facc15'; // Yellow Accent Box
+                ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                ctx.shadowBlur = 15;
+                ctx.font = '900 68px Arial';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
 
-                wrapText(ctx, scriptText, canvas.width / 2, canvas.height / 2, canvas.width - 240, 70);
+                // Text background box
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+                ctx.roundRect(80, canvas.height / 2 - 180, canvas.width - 160, 360, 20);
+                ctx.fill();
+
+                // Draw Text
+                ctx.fillStyle = '#ffffff';
+                wrapAndHighlightText(ctx, currentText.trim(), canvas.width / 2, canvas.height / 2, canvas.width - 220, 85);
 
                 if (synth.speaking) {
-                    bgAnimationId = requestAnimationFrame(renderFrame);
+                    animationFrameId = requestAnimationFrame(render);
                 }
             }
 
-            renderFrame();
+            render();
         }
 
-        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+        function wrapAndHighlightText(context, text, x, y, maxWidth, lineHeight) {
             const words = text.split(' ');
             let line = '';
             let lines = [];
@@ -227,6 +212,8 @@
 
             let startY = y - ((lines.length - 1) * lineHeight) / 2;
             for (let k = 0; k < lines.length; k++) {
+                // Draw yellow highlight for first word of each line
+                context.fillStyle = '#facc15';
                 context.fillText(lines[k], x, startY + (k * lineHeight));
             }
         }
