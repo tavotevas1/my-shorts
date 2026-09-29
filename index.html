@@ -1,747 +1,258 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="lt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlowShorts AI Studio - Viral Video Automation</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                    },
-                    colors: {
-                        flow: {
-                            bg: '#07090e',
-                            card: '#0f1420',
-                            border: '#1a2333',
-                            cyan: '#00f2fe',
-                            purple: '#7928ca',
-                            yellow: '#facc15'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <title>FlowShorts AI Studio - Fully Automated Short Video Creator</title>
     <style>
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #07090e; }
-        ::-webkit-scrollbar-thumb { background: #1a2333; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #2d3b54; }
-
-        .gradient-text {
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #ff0080 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .gradient-btn {
-            background: linear-gradient(135deg, #7928ca 0%, #4f46e5 50%, #00f2fe 100%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .gradient-btn:hover {
-            opacity: 0.95;
-            transform: translateY(-1px);
-            box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
-        }
-
-        .glass-card {
-            background: rgba(15, 20, 32, 0.85);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .active-tab {
-            background: rgba(0, 242, 254, 0.12);
-            border-color: #00f2fe;
-            color: #00f2fe;
-        }
-
-        @keyframes pulseGlow {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.7; }
-        }
-        .glow-effect { animation: pulseGlow 4s infinite ease-in-out; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
+        body { background: #090d16; color: #f8fafc; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
+        h1 { margin-bottom: 20px; color: #38bdf8; text-align: center; font-size: 26px; font-weight: 800; }
+        .container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 1100px; width: 100%; justify-content: center; }
+        .controls { flex: 1; min-width: 340px; background: #111827; padding: 25px; border-radius: 16px; border: 1px solid #1f2937; }
+        .preview { flex: 1; min-width: 340px; display: flex; flex-direction: column; align-items: center; background: #111827; padding: 25px; border-radius: 16px; border: 1px solid #1f2937; }
+        label { display: block; margin-top: 15px; margin-bottom: 6px; font-weight: 700; color: #38bdf8; font-size: 13px; text-transform: uppercase; }
+        textarea, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #374151; background: #030712; color: #fff; font-size: 14px; }
+        textarea { height: 130px; resize: vertical; }
+        button { width: 100%; margin-top: 20px; padding: 15px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 14px rgba(37,99,235,0.4); }
+        button:hover { background: #1d4ed8; }
+        canvas { border-radius: 12px; border: 3px solid #38bdf8; max-width: 300px; max-height: 533px; width: 100%; height: auto; background: #000; box-shadow: 0 0 25px rgba(56,189,248,0.25); }
+        #downloadBtn { background: #16a34a; display: none; margin-top: 15px; text-decoration: none; width: 100%; }
+        #downloadBtn button { margin-top: 0; background: #16a34a; box-shadow: 0 4px 14px rgba(22,163,74,0.4); }
+        .status { margin-top: 12px; font-size: 14px; color: #f59e0b; text-align: center; font-weight: 700; }
+        .scene-info { background: #1f2937; padding: 12px; border-radius: 8px; margin-top: 15px; font-size: 13px; border-left: 4px solid #38bdf8; }
     </style>
 </head>
-<body class="bg-flow-bg text-slate-100 min-h-screen font-sans flex flex-col antialiased selection:bg-flow-cyan selection:text-black">
+<body>
 
-    <!-- Navbar Header -->
-    <header class="border-b border-flow-border bg-flow-bg/90 backdrop-blur sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl gradient-btn flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
-                    <i class="fa-solid fa-bolt text-xl"></i>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xl font-black tracking-tight gradient-text">FlowShorts Studio</span>
-                        <span class="text-[10px] bg-flow-cyan/10 text-flow-cyan px-2 py-0.5 rounded-full border border-flow-cyan/20 font-bold uppercase tracking-wider">AI Studio v3.0</span>
-                    </div>
-                </div>
-            </div>
+    <h1>🎬 FlowShorts AI Studio (Automated Engine)</h1>
 
-            <div class="flex items-center gap-3">
-                <span class="text-xs text-slate-400 hidden sm:inline-flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Gemini 3 Flash Active
-                </span>
-            </div>
-        </div>
-    </header>
+    <div class="container">
+        <!-- Valdymas -->
+        <div class="controls">
+            <label for="script">Video Istorija / Scenarijus (Angliškai):</label>
+            <textarea id="script">Did you know about Harrison Okene? In 2013, a tugboat capsized in the Atlantic ocean. Harrison was trapped inside a dark sunken ship deep underwater for three whole days. Miraculously, divers found him alive in a tiny air pocket!</textarea>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        <!-- LEFT CONTROL PANEL (7 Cols) -->
-        <div class="lg:col-span-7 flex flex-col gap-6">
-            
-            <!-- Mode Switcher & Script Controls -->
-            <div class="glass-card rounded-2xl p-6 relative overflow-hidden shadow-2xl">
-                <div class="absolute -top-16 -right-16 w-48 h-48 bg-flow-purple/20 rounded-full blur-3xl pointer-events-none glow-effect"></div>
+            <label for="modeSelect">Vaizdo Parinkimo Režimas:</label>
+            <select id="modeSelect">
+                <option value="auto">🤖 Automatinis (Parrenka vaizdus pagal tekstą)</option>
+                <option value="ocean">🌊 Vandenynas / Pašėlusi Jūra</option>
+                <option value="space">🌌 Gilusis Kosmosas</option>
+                <option value="fire">🔥 Dūmai ir Ugnis</option>
+            </select>
 
-                <div class="flex items-center justify-between mb-5">
-                    <h2 class="text-base font-extrabold flex items-center gap-2.5">
-                        <span class="w-7 h-7 rounded-lg bg-flow-cyan/10 text-flow-cyan flex items-center justify-center text-xs font-black border border-flow-cyan/30">1</span>
-                        Script & Concept Engine
-                    </h2>
-                    
-                    <!-- Mode Tabs -->
-                    <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-bold">
-                        <button id="tabAuto" onclick="switchMode('auto')" class="px-3 py-1.5 rounded-lg active-tab transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Auto AI Story
-                        </button>
-                        <button id="tabManual" onclick="switchMode('manual')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-keyboard"></i> Manual Script
-                        </button>
-                    </div>
-                </div>
+            <button id="generateBtn" onclick="generateShort()">⚡ Sukurti Pilną Shorts Video</button>
+            <div id="status" class="status"></div>
+            <a id="downloadBtn" download="flowshorts_video.webm"><button>⬇️ Atsisiųsti Paruoštą Video (MP4/WebM)</button></a>
 
-                <!-- AUTO MODE UI -->
-                <div id="autoModeContainer" class="space-y-4">
-                    <div>
-                        <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 block">Choose Viral Niche</label>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                            <button onclick="selectNiche(this, 'Shocking Facts', 'Generate 3 shocking mind-blowing facts about human psychology that no one knows.')" class="niche-btn p-3 rounded-xl border border-flow-cyan bg-flow-cyan/10 text-left hover:border-flow-cyan transition text-xs font-semibold flex items-center gap-2.5 group">
-                                <i class="fa-solid fa-brain text-amber-400 text-sm group-hover:scale-110 transition"></i>
-                                <span>Shocking Facts</span>
-                            </button>
-                            <button onclick="selectNiche(this, 'Deep Sea Mysteries', 'A terrifying story about a mysterious giant creature caught on camera at underwater abyssal trench.')" class="niche-btn p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-left hover:border-flow-cyan transition text-xs font-semibold flex items-center gap-2.5 group">
-                                <i class="fa-solid fa-water text-cyan-400 text-sm group-hover:scale-110 transition"></i>
-                                <span>Deep Sea Mysteries</span>
-                            </button>
-                            <button onclick="selectNiche(this, 'Unsolved Crime', 'Chilling unsolved mysterious disappearances in dense fog in 1994.')" class="niche-btn p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-left hover:border-flow-cyan transition text-xs font-semibold flex items-center gap-2.5 group">
-                                <i class="fa-solid fa-user-ninja text-purple-400 text-sm group-hover:scale-110 transition"></i>
-                                <span>Unsolved Crime</span>
-                            </button>
-                            <button onclick="selectNiche(this, 'Space & Future', 'What happens if a rogue black hole enters our solar system next year?')" class="niche-btn p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-left hover:border-flow-cyan transition text-xs font-semibold flex items-center gap-2.5 group">
-                                <i class="fa-solid fa-shuttle-space text-indigo-400 text-sm group-hover:scale-110 transition"></i>
-                                <span>Space & Future</span>
-                            </button>
-                            <button onclick="selectNiche(this, 'Dark History', 'Untold dark secrets about ancient Roman gladiators that was hidden for centuries.')" class="niche-btn p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-left hover:border-flow-cyan transition text-xs font-semibold flex items-center gap-2.5 group">
-                                <i class="fa-solid fa-skull text-red-400 text-sm group-hover:scale-110 transition"></i>
-                                <span>Dark History</span>
-                            </button>
-                            <button onclick="selectNiche(this, 'Custom Topic', '')" class="niche-btn p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-left hover:border-flow-cyan transition text-xs font-semibold flex items-center gap-2.5 group">
-                                <i class="fa-solid fa-pen-nib text-pink-400 text-sm group-hover:scale-110 transition"></i>
-                                <span>Custom Topic</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5 block">Story Topic / Prompt</label>
-                        <textarea id="promptInput" rows="3" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 text-xs text-slate-100 focus:outline-none focus:border-flow-cyan transition placeholder-slate-600 resize-none font-medium" placeholder="Describe your viral video topic..."></textarea>
-                    </div>
-                </div>
-
-                <!-- MANUAL MODE UI -->
-                <div id="manualModeContainer" class="hidden space-y-4">
-                    <div>
-                        <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5 block">Paste Full Video Script</label>
-                        <textarea id="manualScriptInput" rows="5" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 text-xs text-slate-100 focus:outline-none focus:border-flow-cyan transition placeholder-slate-600 resize-none font-medium" placeholder="Paste your script sentences here. Our engine will automatically parse and convert it into a 9:16 short with stock visuals..."></textarea>
-                    </div>
-                </div>
-
-                <div class="mt-5 flex gap-3">
-                    <button onclick="generateShortsData()" id="generateBtn" class="gradient-btn flex-1 py-3.5 px-6 rounded-xl font-extrabold text-xs text-white uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl">
-                        <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
-                        <span>Generate Complete Short Video</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Step 2: Scene Timeline & Visual Prompts Editor -->
-            <div class="glass-card rounded-2xl p-6 relative">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-base font-extrabold flex items-center gap-2.5">
-                        <span class="w-7 h-7 rounded-lg bg-flow-purple/20 text-flow-purple flex items-center justify-center text-xs font-black border border-flow-purple/30">2</span>
-                        Scene Breakdown & Timelines (<span id="sceneCount">4</span>)
-                    </h2>
-                    <button onclick="addNewScene()" class="text-xs text-flow-cyan hover:underline flex items-center gap-1 font-bold">
-                        <i class="fa-solid fa-plus"></i> Add Scene
-                    </button>
-                </div>
-
-                <div id="scenesList" class="space-y-3.5 max-h-[480px] overflow-y-auto pr-1">
-                    <!-- Dynamic scenes rendered via JS -->
-                </div>
-            </div>
+            <div id="sceneDetails" class="scene-info" style="display:none;"></div>
         </div>
 
-        <!-- RIGHT STUDIO PLAYER (5 Cols) -->
-        <div class="lg:col-span-5 flex flex-col gap-6">
-            
-            <div class="glass-card rounded-2xl p-6 sticky top-20 flex flex-col items-center">
-                <div class="w-full flex items-center justify-between mb-4">
-                    <h2 class="text-sm font-extrabold flex items-center gap-2">
-                        <i class="fa-solid fa-mobile-screen-button text-flow-cyan"></i>
-                        Live Studio Player (9:16 TikTok Format)
-                    </h2>
-                    <span id="videoDurationBadge" class="text-[10px] bg-slate-900 text-flow-cyan px-2.5 py-1 rounded-full font-mono border border-slate-800 font-bold">00:16</span>
-                </div>
-
-                <!-- 9:16 Shorts Canvas Container -->
-                <div class="relative w-full max-w-[280px] aspect-[9/16] bg-black rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-800 group">
-                    <!-- Background Video Element for Real HD Stock clips -->
-                    <video id="bgVideo" class="absolute inset-0 w-full h-full object-cover hidden" loop muted playsinline></video>
-                    
-                    <!-- Main Animation Canvas -->
-                    <canvas id="videoCanvas" width="1080" height="1920" class="relative z-10 w-full h-full object-cover"></canvas>
-
-                    <!-- Status Overlay Badge -->
-                    <div class="absolute top-3 left-3 z-20 bg-black/70 backdrop-blur px-2.5 py-1 rounded-lg border border-white/10 text-[10px] font-bold text-slate-200 flex items-center gap-1.5">
-                        <span id="liveStatusDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span id="liveStatusText">Ready</span>
-                    </div>
-
-                    <!-- Overlay Play/Pause Trigger -->
-                    <div id="playOverlay" class="absolute inset-0 z-30 bg-black/40 backdrop-blur-[2px] flex items-center justify-center transition opacity-100 cursor-pointer" onclick="togglePlayPause()">
-                        <div class="w-16 h-16 rounded-full gradient-btn flex items-center justify-center text-white text-2xl shadow-2xl hover:scale-110 transition">
-                            <i id="playIcon" class="fa-solid fa-play ml-1"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Audio Controls & Export Engine -->
-                <div class="w-full mt-6 space-y-4 border-t border-slate-800/80 pt-5">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1 block">Voice Pitch</label>
-                            <input type="range" id="voicePitch" min="0.6" max="1.4" step="0.05" value="0.95" class="w-full accent-flow-cyan bg-slate-900 rounded cursor-pointer">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1 block">Speech Speed</label>
-                            <input type="range" id="voiceRate" min="0.8" max="1.5" step="0.05" value="1.05" class="w-full accent-flow-cyan bg-slate-900 rounded cursor-pointer">
-                        </div>
-                    </div>
-
-                    <div class="flex gap-2">
-                        <button onclick="togglePlayPause()" id="playBtn" class="flex-1 py-3 bg-slate-900 hover:bg-slate-800 font-extrabold text-xs rounded-xl text-white transition flex items-center justify-center gap-2 border border-slate-800">
-                            <i id="btnPlayIcon" class="fa-solid fa-play text-flow-cyan"></i>
-                            <span id="btnPlayText">Preview Short</span>
-                        </button>
-
-                        <button onclick="renderAndRecordVideo()" id="recordBtn" class="py-3 px-5 bg-emerald-600 hover:bg-emerald-500 font-extrabold text-xs rounded-xl text-white transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/40">
-                            <i class="fa-solid fa-download"></i>
-                            Export MP4/WebM
-                        </button>
-                    </div>
-
-                    <div id="exportStatus" class="hidden text-center text-xs font-bold text-amber-400 animate-pulse">
-                        <i class="fa-solid fa-spinner animate-spin mr-1"></i> Recording video stream... Please wait
-                    </div>
-                </div>
-
-            </div>
-
+        <!-- Peržiūra -->
+        <div class="preview">
+            <h3>9:16 Vertikalus Peržiūros Langas</h3>
+            <canvas id="videoCanvas" width="1080" height="1920" style="margin-top:15px;"></canvas>
         </div>
-
-    </main>
+    </div>
 
     <script>
-        // Default AI Generated / Stock Scenes State
-        let scenes = [
-            {
-                id: 1,
-                text: "Deep in the Pacific ocean lies the Mariana Trench, a place darker than outer space.",
-                duration: 4,
-                stockTag: "deep ocean abyss underwater mysterious",
-                bgGradient: ['#0284c7', '#0369a1', '#021329'],
-                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-underwater-lights-in-the-sea-41561-large.mp4"
-            },
-            {
-                id: 2,
-                text: "Pressure at the bottom is over one thousand times greater than at surface level.",
-                duration: 4,
-                stockTag: "ocean pressure underwater deep dark water",
-                bgGradient: ['#0d9488', '#0f766e', '#042f2e'],
-                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-water-fast-stream-in-the-sea-41555-large.mp4"
-            },
-            {
-                id: 3,
-                text: "Scientists dropped an acoustic microphone and recorded terrifying unexplained oceanic sounds.",
-                duration: 4,
-                stockTag: "mysterious sonar ocean glowing lights alien",
-                bgGradient: ['#7e22ce', '#3b0764', '#090514'],
-                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-abstract-glowing-particles-in-motion-41550-large.mp4"
-            },
-            {
-                id: 4,
-                text: "Some believe giant prehistoric leviathans are still lurking in the uncharted abyss!",
-                duration: 4,
-                stockTag: "monstrous sea creature dark ocean storm",
-                bgGradient: ['#be123c', '#881337', '#11040a'],
-                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-dark-blue-water-surface-in-motion-41553-large.mp4"
-            }
-        ];
-
-        let activeMode = 'auto';
-        let currentPrompt = 'Generate 3 shocking mind-blowing facts about human psychology that no one knows.';
-        let isPlaying = false;
-        let isRecording = false;
-        let currentSceneIndex = 0;
-        let animationFrameId = null;
-        let playbackStartTime = 0;
-        let synth = window.speechSynthesis;
-
-        // Mode Switcher
-        function switchMode(mode) {
-            activeMode = mode;
-            const tabAuto = document.getElementById('tabAuto');
-            const tabManual = document.getElementById('tabManual');
-            const autoBox = document.getElementById('autoModeContainer');
-            const manualBox = document.getElementById('manualModeContainer');
-
-            if (mode === 'auto') {
-                tabAuto.className = 'px-3 py-1.5 rounded-lg active-tab transition flex items-center gap-1.5';
-                tabManual.className = 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5';
-                autoBox.classList.remove('hidden');
-                manualBox.classList.add('hidden');
-            } else {
-                tabManual.className = 'px-3 py-1.5 rounded-lg active-tab transition flex items-center gap-1.5';
-                tabAuto.className = 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5';
-                manualBox.classList.remove('hidden');
-                autoBox.classList.add('hidden');
-            }
-        }
-
-        // Niche selector
-        function selectNiche(btn, name, prompt) {
-            document.querySelectorAll('.niche-btn').forEach(b => {
-                b.className = 'niche-btn p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-left hover:border-flow-cyan transition text-xs font-semibold flex items-center gap-2.5 group';
-            });
-            btn.className = 'niche-btn p-3 rounded-xl border border-flow-cyan bg-flow-cyan/10 text-left hover:border-flow-cyan transition text-xs font-semibold flex items-center gap-2.5 group';
-            currentPrompt = prompt;
-            if (prompt) {
-                document.getElementById('promptInput').value = prompt;
-            }
-        }
-
-        // Render Scene Editor Cards
-        function renderSceneCards() {
-            const container = document.getElementById('scenesList');
-            document.getElementById('sceneCount').innerText = scenes.length;
-            
-            const totalDuration = scenes.reduce((a, b) => a + (b.duration || 4), 0);
-            document.getElementById('videoDurationBadge').innerText = `00:${totalDuration < 10 ? '0' : ''}${totalDuration}`;
-
-            container.innerHTML = '';
-
-            scenes.forEach((scene, idx) => {
-                const card = document.createElement('div');
-                const isActive = currentSceneIndex === idx && isPlaying;
-                card.className = `p-4 rounded-xl border ${isActive ? 'border-flow-cyan bg-slate-900/90 shadow-lg shadow-cyan-900/20' : 'border-slate-800 bg-slate-900/50'} transition space-y-2.5`;
-                
-                card.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-extrabold text-flow-cyan flex items-center gap-1.5">
-                            <span class="w-5 h-5 rounded-full bg-flow-cyan/20 flex items-center justify-center text-[10px]">${idx + 1}</span>
-                            Scene #${idx + 1}
-                        </span>
-                        <div class="flex items-center gap-2">
-                            <input type="number" min="2" max="10" value="${scene.duration}" onchange="updateSceneDuration(${idx}, this.value)" class="w-12 bg-slate-950 border border-slate-800 rounded text-center text-xs text-slate-300 py-1 font-bold">
-                            <span class="text-[10px] text-slate-500 font-bold uppercase">Sec</span>
-                            <button onclick="removeScene(${idx})" class="text-slate-500 hover:text-red-400 text-xs px-1"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="text-[9px] uppercase font-bold text-slate-500 block mb-1">Voiceover Caption</label>
-                        <input type="text" value="${escapeHtml(scene.text)}" onchange="updateSceneText(${idx}, this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:border-flow-cyan focus:outline-none font-medium">
-                    </div>
-
-                    <div>
-                        <label class="text-[9px] uppercase font-bold text-slate-500 block mb-1"><i class="fa-solid fa-film text-flow-purple mr-1"></i> Stock Visual Theme</label>
-                        <input type="text" value="${escapeHtml(scene.stockTag)}" onchange="updateSceneTag(${idx}, this.value)" class="w-full bg-slate-950/60 border border-slate-800/80 rounded-lg p-2 text-xs text-slate-400 focus:border-flow-purple focus:outline-none">
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function escapeHtml(str) {
-            return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-        }
-
-        function updateSceneText(i, val) { scenes[i].text = val; }
-        function updateSceneTag(i, val) { scenes[i].stockTag = val; }
-        function updateSceneDuration(i, val) { scenes[i].duration = parseFloat(val) || 4; renderSceneCards(); }
-
-        function addNewScene() {
-            scenes.push({
-                id: Date.now(),
-                text: "And what scientists discovered next shocked the entire world!",
-                duration: 4,
-                stockTag: "shocking discovery futuristic neon glowing mystery",
-                bgGradient: ['#be123c', '#881337', '#11040a']
-            });
-            renderSceneCards();
-        }
-
-        function removeScene(idx) {
-            if (scenes.length <= 1) return alert("Your short must contain at least one scene!");
-            scenes.splice(idx, 1);
-            renderSceneCards();
-        }
-
-        async function generateShortsData() {
-            const btn = document.getElementById('generateBtn');
-            const origContent = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-sm"></i> Generating AI Storyboard...`;
-
-            if (activeMode === 'manual') {
-                const textVal = document.getElementById('manualScriptInput').value.trim();
-                if (!textVal) {
-                    alert("Please enter a manual script first!");
-                    btn.disabled = false;
-                    btn.innerHTML = origContent;
-                    return;
-                }
-                
-                const sentences = textVal.split(/(?<=[.!?])\s+/).filter(s => s.length > 5);
-                scenes = sentences.map((st, i) => ({
-                    id: Date.now() + i,
-                    text: st,
-                    duration: 4,
-                    stockTag: "cinematic cinematic background dark mysterious",
-                    bgGradient: [['#0284c7', '#0369a1', '#021329'], ['#7e22ce', '#3b0764', '#090514'], ['#be123c', '#881337', '#11040a']][i % 3]
-                }));
-                renderSceneCards();
-                btn.disabled = false;
-                btn.innerHTML = origContent;
-                return;
-            }
-
-            const promptVal = document.getElementById('promptInput').value.trim() || currentPrompt;
-
-            const systemPrompt = `You are a viral YouTube Shorts script writer for FlowShorts. Generate a 4-scene video script for the user topic. Format response MUST be strict JSON array containing 4 objects with properties: "text" (1 punchy dramatic sentence), "stockTag" (2-4 keywords for stock visual video), and "duration" (number 3 or 4). Do not include markdown formatting.`;
-
-            try {
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Topic: ${promptVal}` }] }],
-                        systemInstruction: { parts: [{ text: systemPrompt }] },
-                        generationConfig: {
-                            responseMimeType: "application/json",
-                            responseSchema: {
-                                type: "ARRAY",
-                                items: {
-                                    type: "OBJECT",
-                                    properties: {
-                                        "text": { "type": "STRING" },
-                                        "stockTag": { "type": "STRING" },
-                                        "duration": { "type": "NUMBER" }
-                                    },
-                                    propertyOrdering: ["text", "stockTag", "duration"]
-                                }
-                            }
-                        }
-                    })
-                });
-
-                const data = await response.json();
-                const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                if (jsonText) {
-                    const parsed = JSON.parse(jsonText);
-                    const gradients = [
-                        ['#0284c7', '#0369a1', '#021329'],
-                        ['#0d9488', '#0f766e', '#042f2e'],
-                        ['#7e22ce', '#3b0764', '#090514'],
-                        ['#be123c', '#881337', '#11040a']
-                    ];
-                    scenes = parsed.map((item, idx) => ({
-                        id: Date.now() + idx,
-                        text: item.text || "Unbelievable viral story fact.",
-                        stockTag: item.stockTag || "cinematic dark background",
-                        duration: item.duration || 4,
-                        bgGradient: gradients[idx % gradients.length]
-                    }));
-                    renderSceneCards();
-                    currentSceneIndex = 0;
-                }
-            } catch (e) {
-                console.warn("AI Script generation fallback triggered:", e);
-                alert("AI generated script loaded successfully!");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = origContent;
-            }
-        }
-
         const canvas = document.getElementById('videoCanvas');
         const ctx = canvas.getContext('2d');
+        let animationId;
 
-        function drawSceneVisuals(time, sceneIdx) {
-            const w = canvas.width;
-            const h = canvas.height;
-            const scene = scenes[sceneIdx] || scenes[0];
-            const bgGrad = scene.bgGradient || ['#0284c7', '#0369a1', '#021329'];
+        // Patikimi atviri HD vaizdo įrašų šaltiniai (be CORS blokavimo)
+        const videoStock = {
+            ocean: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+            space: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+            fire: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+            default: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
+        };
 
-            // Base Radial Gradient background
-            const grad = ctx.createRadialGradient(w / 2, h / 2, 100, w / 2, h / 2, w * 0.9);
-            grad.addColorStop(0, bgGrad[0]);
-            grad.addColorStop(0.5, bgGrad[1]);
-            grad.addColorStop(1, bgGrad[2]);
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, w, h);
-
-            // Dynamic Camera Pan / Scale Effect
-            const scale = 1 + (Math.sin(time * 0.8) + 1) * 0.04;
-            ctx.save();
-            ctx.translate(w / 2, h / 2);
-            ctx.scale(scale, scale);
-            ctx.translate(-w / 2, -h / 2);
-
-            // Floating Bokeh & Atmospheric Light Bubbles
-            for (let i = 0; i < 30; i++) {
-                const px = (Math.sin(i * 123 + time * 0.6) * 0.5 + 0.5) * w;
-                const py = (Math.cos(i * 45 + time * 0.4) * 0.5 + 0.5) * h;
-                const rad = (Math.sin(i + time * 2) + 2) * 16;
-
-                ctx.beginPath();
-                ctx.arc(px, py, rad, 0, Math.PI * 2);
-                ctx.fillStyle = i % 2 === 0 ? 'rgba(0, 242, 254, 0.18)' : 'rgba(255, 255, 255, 0.12)';
-                ctx.fill();
+        function getAutoVideo(text) {
+            const t = text.toLowerCase();
+            if (t.includes("ocean") || t.includes("water") || t.includes("ship") || t.includes("sea") || t.includes("underwater")) {
+                return videoStock.ocean;
+            } else if (t.includes("space") || t.includes("star") || t.includes("planet") || t.includes("sky")) {
+                return videoStock.space;
+            } else if (t.includes("fire") || t.includes("burn") || t.includes("dark") || t.includes("danger")) {
+                return videoStock.fire;
             }
-
-            ctx.restore();
-
-            // Dark Cinematic Vignette
-            const vignette = ctx.createRadialGradient(w / 2, h / 2, h * 0.35, w / 2, h / 2, h * 0.75);
-            vignette.addColorStop(0, 'rgba(0,0,0,0)');
-            vignette.addColorStop(1, 'rgba(0,0,0,0.85)');
-            ctx.fillStyle = vignette;
-            ctx.fillRect(0, 0, w, h);
+            return videoStock.default;
         }
 
-        function drawCapcutSubtitles(text, progress) {
-            if (!text) return;
+        async function generateShort() {
+            const scriptText = document.getElementById('script').value.trim();
+            const mode = document.getElementById('modeSelect').value;
+            const status = document.getElementById('status');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const sceneDetails = document.getElementById('sceneDetails');
 
-            const words = text.toUpperCase().split(' ');
-            const activeIdx = Math.min(Math.floor(progress * words.length), words.length - 1);
+            downloadBtn.style.display = 'none';
+            sceneDetails.style.display = 'none';
 
-            // 3-word chunk for fast viral reading
-            const chunkSize = 3;
-            const chunkStart = Math.floor(activeIdx / chunkSize) * chunkSize;
-            const currentChunk = words.slice(chunkStart, chunkStart + chunkSize);
+            if (!scriptText) return alert("Prašome įvesti tekstą!");
 
-            ctx.save();
-            const fontSize = 72;
-            ctx.font = `900 ${fontSize}px "Plus Jakarta Sans", sans-serif`;
+            status.innerText = "⚙️ Analizuojamas scenarijus ir skaidomos scenos...";
 
-            const lineY = canvas.height * 0.68;
-            const fullTextStr = currentChunk.join(' ');
-            const totalWidth = ctx.measureText(fullTextStr).width;
+            // Sakinių skaidymas
+            const sentences = scriptText.match(/[^.!?]+[.!?]+/g) || [scriptText];
+            const scenes = [];
 
-            // Subtitle Background Shadow Box
-            const boxPadding = 40;
-            const boxWidth = totalWidth + (boxPadding * 2);
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
-            ctx.beginPath();
-            ctx.roundRect(canvas.width / 2 - boxWidth / 2, lineY - 65, boxWidth, 130, 28);
-            ctx.fill();
-            ctx.strokeStyle = '#00f2fe';
-            ctx.lineWidth = 4;
-            ctx.stroke();
-
-            // Word-by-word bounce and highlight rendering
-            let startX = canvas.width / 2 - (totalWidth / 2);
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'middle';
-
-            currentChunk.forEach((word, i) => {
-                const globalWordIdx = chunkStart + i;
-                const isHighlight = globalWordIdx === activeIdx;
-
-                ctx.save();
-
-                // Highlight scale bounce animation
-                if (isHighlight) {
-                    const wordWidth = ctx.measureText(word).width;
-                    ctx.translate(startX + wordWidth / 2, lineY);
-                    ctx.scale(1.1, 1.1);
-                    ctx.translate(-(startX + wordWidth / 2), -lineY);
+            for (let i = 0; i < sentences.length; i++) {
+                const text = sentences[i].trim();
+                let videoUrl = videoStock[mode];
+                if (mode === 'auto') {
+                    videoUrl = getAutoVideo(text);
                 }
 
-                // Word Strokes & Fill
-                ctx.fillStyle = isHighlight ? '#facc15' : '#ffffff'; // Vibrant CapCut Yellow
-                ctx.strokeStyle = '#000000';
-                ctx.lineWidth = 14;
-                ctx.strokeText(word, startX, lineY);
-                ctx.fillText(word, startX, lineY);
+                // Laiko skaičiavimas pagal žodžių skaičių (kad spėtų viską įgarsinti)
+                const wordCount = text.split(' ').length;
+                const duration = Math.max(3.5, wordCount * 0.42);
 
-                ctx.restore();
+                scenes.push({
+                    text: text,
+                    videoUrl: videoUrl,
+                    duration: duration
+                });
+            }
 
-                startX += ctx.measureText(word + ' ').width;
-            });
+            status.innerText = "🎥 Kraunami HD fono vaizdo įrašai...";
 
-            ctx.restore();
-        }
+            // Vaizdo įrašų užkrovimas į atmintį
+            const loadedVideos = await Promise.all(scenes.map(scene => {
+                return new Promise((resolve) => {
+                    const video = document.createElement('video');
+                    video.src = scene.videoUrl;
+                    video.crossOrigin = "anonymous";
+                    video.loop = true;
+                    video.muted = true;
+                    video.playsInline = true;
+                    video.onloadeddata = () => resolve(video);
+                    video.onerror = () => resolve(null);
+                    video.load();
+                });
+            }));
 
-        // Voice synthesis engine
-        function speakSceneVoice(text) {
-            if (!('speechSynthesis' in window)) return;
+            status.innerText = "🎙️ Ruošiamas AI įgarsinimas ir generuojamas video...";
+            sceneDetails.style.display = 'block';
+            sceneDetails.innerHTML = `<b>Generavimo informacija:</b><br>Scenų skaičius: ${scenes.length}<br>Numatoma trukmė: ~${Math.round(scenes.reduce((a,b)=>a+b.duration, 0))} sek.`;
+
+            // Įgarsinimas per speechSynthesis
+            const synth = window.speechSynthesis;
             synth.cancel();
+            const utterance = new SpeechSynthesisUtterance(scriptText);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.95;
+            utterance.pitch = 0.9;
 
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.pitch = parseFloat(document.getElementById('voicePitch').value) || 0.95;
-            utterance.rate = parseFloat(document.getElementById('voiceRate').value) || 1.05;
-
-            const voices = synth.getVoices();
-            const englishVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google'))) || voices[0];
-            if (englishVoice) utterance.voice = englishVoice;
-
-            synth.speak(utterance);
-        }
-
-        function togglePlayPause() {
-            if (isPlaying) stopPlayback();
-            else startPlayback();
-        }
-
-        function startPlayback() {
-            isPlaying = true;
-            currentSceneIndex = 0;
-            playbackStartTime = Date.now();
-
-            document.getElementById('playOverlay').classList.add('opacity-0', 'pointer-events-none');
-            document.getElementById('playIcon').className = 'fa-solid fa-pause';
-            document.getElementById('btnPlayIcon').className = 'fa-solid fa-pause text-flow-cyan';
-            document.getElementById('btnPlayText').innerText = 'Pause Preview';
-            document.getElementById('liveStatusText').innerText = 'Playing';
-
-            speakSceneVoice(scenes[0].text);
-            animationLoop();
-        }
-
-        function stopPlayback() {
-            isPlaying = false;
-            synth.cancel();
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
-
-            document.getElementById('playOverlay').classList.remove('opacity-0', 'pointer-events-none');
-            document.getElementById('playIcon').className = 'fa-solid fa-play ml-1';
-            document.getElementById('btnPlayIcon').className = 'fa-solid fa-play text-flow-cyan';
-            document.getElementById('btnPlayText').innerText = 'Preview Short';
-            document.getElementById('liveStatusText').innerText = 'Ready';
-
-            drawSceneVisuals(0, 0);
-            drawCapcutSubtitles(scenes[0].text, 0.2);
-        }
-
-        function animationLoop() {
-            if (!isPlaying) return;
-
-            const elapsed = (Date.now() - playbackStartTime) / 1000;
-            let currentAccum = 0;
-            let activeIdx = 0;
-
-            for (let i = 0; i < scenes.length; i++) {
-                if (elapsed >= currentAccum && elapsed < currentAccum + scenes[i].duration) {
-                    activeIdx = i;
-                    break;
-                }
-                currentAccum += scenes[i].duration;
+            const voices = synth.getVoices().filter(v => v.lang.startsWith('en'));
+            if (voices.length > 0) {
+                utterance.voice = voices.find(v => v.name.includes("Google") || v.name.includes("Natural")) || voices[0];
             }
 
-            if (activeIdx !== currentSceneIndex) {
-                currentSceneIndex = activeIdx;
-                speakSceneVoice(scenes[currentSceneIndex].text);
-                renderSceneCards();
-            }
-
-            if (elapsed >= currentAccum) {
-                stopPlayback();
-                return;
-            }
-
-            const currentScene = scenes[currentSceneIndex];
-            const sceneElapsed = elapsed - (currentAccum - currentScene.duration);
-            const sceneProgress = sceneElapsed / currentScene.duration;
-
-            drawSceneVisuals(elapsed, currentSceneIndex);
-            drawCapcutSubtitles(currentScene.text, sceneProgress);
-
-            animationFrameId = requestAnimationFrame(animationLoop);
-        }
-
-        function renderAndRecordVideo() {
-            const statusEl = document.getElementById('exportStatus');
-            statusEl.classList.remove('hidden');
-
+            // Įrašymo variklis
             const stream = canvas.captureStream(30);
             let mediaRecorder;
-            const chunks = [];
+            const recordedChunks = [];
 
             try {
-                mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
-            } catch (e) {
+                mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+            } catch(e) {
                 mediaRecorder = new MediaRecorder(stream);
             }
 
-            mediaRecorder.ondataavailable = e => chunks.push(e.data);
+            mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
             mediaRecorder.onstop = () => {
-                const blob = new Blob(chunks, { type: 'video/webm' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `FlowShort_${Date.now()}.webm`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                statusEl.classList.add('hidden');
-                alert("Video downloaded successfully! You can now upload it directly to TikTok or YouTube Shorts.");
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                downloadBtn.href = URL.createObjectURL(blob);
+                downloadBtn.style.display = 'block';
+                status.innerText = "✅ Shorts Video sėkmingai sugeneruotas! Atsisiųskite žemiau.";
             };
 
+            // Paleidimas
+            loadedVideos.forEach(v => { if (v) v.play(); });
             mediaRecorder.start();
-            startPlayback();
+            synth.speak(utterance);
 
-            const totalDurationSec = scenes.reduce((a, b) => a + b.duration, 0);
-            setTimeout(() => {
-                if (mediaRecorder.state !== 'inactive') {
-                    mediaRecorder.stop();
+            let currentSceneIdx = 0;
+            let sceneStartTime = Date.now();
+
+            function render() {
+                const now = Date.now();
+                const currentScene = scenes[currentSceneIdx];
+                const activeVid = loadedVideos[currentSceneIdx];
+
+                // Scenų perjungimas pagal laiką
+                if (now - sceneStartTime > currentScene.duration * 1000) {
+                    currentSceneIdx++;
+                    sceneStartTime = Date.now();
                 }
-            }, (totalDurationSec + 0.5) * 1000);
-        }
 
-        // Initialization
-        window.onload = () => {
-            document.getElementById('promptInput').value = currentPrompt;
-            renderSceneCards();
-            drawSceneVisuals(0, 0);
-            drawCapcutSubtitles(scenes[0].text, 0.2);
-        };
+                if (currentSceneIdx < scenes.length) {
+                    const scene = scenes[currentSceneIdx];
+                    const vid = loadedVideos[currentSceneIdx];
+
+                    // 1. Piesiamas fonas
+                    if (vid && vid.readyState >= 2) {
+                        ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+                    } else {
+                        ctx.fillStyle = '#0f172a';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    }
+
+                    // 2. Tamsinimo sluoksnis
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // 3. Subtitrai (CapCut stiliaus)
+                    ctx.font = '900 65px Arial, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+
+                    const words = scene.text.toUpperCase().split(' ');
+                    let line = '';
+                    let lines = [];
+
+                    for (let n = 0; n < words.length; n++) {
+                        let testLine = line + words[n] + ' ';
+                        let metrics = ctx.measureText(testLine);
+                        if (metrics.width > canvas.width - 240 && n > 0) {
+                            lines.push(line);
+                            line = words[n] + ' ';
+                        } else {
+                            line = testLine;
+                        }
+                    }
+                    lines.push(line);
+
+                    // Subtitrų dėžutė
+                    const boxHeight = lines.length * 85 + 60;
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+                    ctx.beginPath();
+                    ctx.roundRect(80, canvas.height / 2 - (boxHeight / 2), canvas.width - 160, boxHeight, 20);
+                    ctx.fill();
+
+                    // Teksto piešimas su juodu kontūru
+                    let startY = canvas.height / 2 - ((lines.length - 1) * 42);
+                    lines.forEach((l, idx) => {
+                        ctx.lineWidth = 10;
+                        ctx.strokeStyle = '#000000';
+                        ctx.strokeText(l.trim(), canvas.width / 2, startY + (idx * 85));
+
+                        ctx.fillStyle = '#facc15';
+                        ctx.fillText(l.trim(), canvas.width / 2, startY + (idx * 85));
+                    });
+
+                    animationId = requestAnimationFrame(render);
+                } else {
+                    synth.cancel();
+                    mediaRecorder.stop();
+                    cancelAnimationFrame(animationId);
+                }
+            }
+
+            render();
+        }
     </script>
 </body>
 </html>
