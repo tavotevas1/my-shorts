@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlowShorts AI Studio - Modern Viral Short Generator</title>
+    <title>FlowShorts AI Studio Pro - Viral Short Video Generator</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -20,11 +20,12 @@
                     },
                     colors: {
                         flow: {
-                            bg: '#06080f',
-                            card: '#0d111c',
-                            border: '#1a2333',
+                            bg: '#05070e',
+                            card: '#0c101c',
+                            border: '#172033',
                             cyan: '#00f2fe',
-                            purple: '#7928ca',
+                            purple: '#8b5cf6',
+                            crimson: '#f43f5e',
                             lime: '#22c55e',
                             amber: '#f59e0b'
                         }
@@ -35,12 +36,12 @@
     </script>
     <style>
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #06080f; }
-        ::-webkit-scrollbar-thumb { background: #1a2333; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: #05070e; }
+        ::-webkit-scrollbar-thumb { background: #172033; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #2d3b54; }
 
         .gradient-text {
-            background: linear-gradient(135deg, #00f2fe 0%, #3b82f6 50%, #22c55e 100%);
+            background: linear-gradient(135deg, #00f2fe 0%, #a855f7 50%, #f43f5e 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -56,60 +57,48 @@
         }
 
         .glass-card {
-            background: rgba(13, 17, 28, 0.85);
+            background: rgba(12, 16, 28, 0.85);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-
-        @keyframes pulseGlow {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.7; }
-        }
-        .glow-effect { animation: pulseGlow 4s infinite ease-in-out; }
     </style>
 </head>
 <body class="bg-flow-bg text-slate-100 min-h-screen font-sans flex flex-col antialiased selection:bg-flow-cyan selection:text-black">
 
-    <!-- Header -->
     <header class="border-b border-flow-border bg-flow-bg/90 backdrop-blur sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl gradient-btn flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
-                    <i class="fa-solid fa-bolt text-xl"></i>
+                    <i class="fa-solid fa-film text-xl"></i>
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="text-xl font-black tracking-tight gradient-text">FlowShorts AI Studio</span>
-                        <span class="text-[10px] bg-flow-cyan/10 text-flow-cyan px-2 py-0.5 rounded-full border border-flow-cyan/20 font-bold uppercase tracking-wider">v4.0 Sync Engine</span>
+                        <span class="text-xl font-black tracking-tight gradient-text">FlowShorts Studio Pro</span>
+                        <span class="text-[10px] bg-red-500/10 text-red-400 px-2 py-0.5 rounded-full border border-red-500/20 font-bold uppercase tracking-wider">v5.0 Nightline Edition</span>
                     </div>
                 </div>
             </div>
 
             <div class="flex items-center gap-3">
                 <span class="text-xs text-slate-400 inline-flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Word-Level Precise Sync
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Multi-Scene + Nightline Horror Engine
                 </span>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         <!-- LEFT CONTROL PANEL (7 Cols) -->
         <div class="lg:col-span-7 flex flex-col gap-6">
             
             <div class="glass-card rounded-2xl p-6 relative overflow-hidden shadow-2xl space-y-5">
-                <div class="absolute -top-16 -right-16 w-48 h-48 bg-flow-purple/20 rounded-full blur-3xl pointer-events-none glow-effect"></div>
-
+                
                 <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
                     <h2 class="text-base font-extrabold flex items-center gap-2.5">
                         <span class="w-7 h-7 rounded-lg bg-flow-cyan/10 text-flow-cyan flex items-center justify-center text-xs font-black border border-flow-cyan/30">1</span>
-                        ElevenLabs API & Studio Settings
+                        Voice & API Setup
                     </h2>
-                    <span class="text-[11px] text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">
-                        <i class="fa-solid fa-check-double mr-1"></i> Timestamps Enabled
-                    </span>
                 </div>
 
                 <!-- API Key Input -->
@@ -120,71 +109,102 @@
                     </label>
                     <div class="relative">
                         <i class="fa-solid fa-key absolute left-3.5 top-3.5 text-slate-500 text-xs"></i>
-                        <input type="password" id="apiKey" placeholder="sk_... (Paste your ElevenLabs API Key)" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl py-2.5 pl-9 pr-3.5 text-xs text-slate-100 focus:outline-none focus:border-flow-cyan transition font-mono">
+                        <input type="password" id="apiKey" placeholder="sk_... (ElevenLabs API Key)" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl py-2.5 pl-9 pr-3.5 text-xs text-slate-100 focus:outline-none focus:border-flow-cyan transition font-mono">
                     </div>
                 </div>
 
-                <!-- Voice Selection & Subtitle Style Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Settings Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                        <label class="text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1.5 block">Select AI Voice</label>
+                        <label class="text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1.5 block">AI Voice</label>
                         <select id="voiceSelect" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-flow-cyan transition font-semibold cursor-pointer">
-                            <option value="pNInz6obpgDQGcFmaJgB">Adam (Deep & Viral Storyteller)</option>
-                            <option value="JBFqnCBsd6RMkjVDRZzb">George (Warm, Deep & Dramatic)</option>
-                            <option value="21m00Tcm4TlvDq8ikWAM">Rachel (Calm & Professional)</option>
-                            <option value="ErXwobaYiN019PkySvjV">Antoni (Engaging Narrative)</option>
-                            <option value="VR6AewLTigWG4xT3pm42">Arnold (Heavy & Intense)</option>
+                            <option value="JBFqnCBsd6RMkjVDRZzb">George (Deep Horror Narrator)</option>
+                            <option value="pNInz6obpgDQGcFmaJgB">Adam (Viral Storyteller)</option>
+                            <option value="VR6AewLTigWG4xT3pm42">Arnold (Heavy & Dark)</option>
+                            <option value="21m00Tcm4TlvDq8ikWAM">Rachel (Intense Narrative)</option>
                         </select>
                     </div>
 
                     <div>
                         <label class="text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1.5 block">Subtitle Style</label>
                         <select id="subtitleStyleSelect" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-flow-cyan transition font-semibold cursor-pointer">
-                            <option value="hormozi">Alex Hormozi (Bold White + Pop-in Green Highlight)</option>
-                            <option value="mrbeast">MrBeast Style (Yellow Highlight + Heavy Shadow)</option>
-                            <option value="minimal">Minimal Modern (Clean White + Soft Shadow)</option>
+                            <option value="nightline">Nightline Horror (Yellow + Emojis)</option>
+                            <option value="hormozi">Alex Hormozi (Bold White + Green Pop)</option>
+                            <option value="mrbeast">MrBeast Style (Neon Yellow + Heavy Shadow)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1.5 block">Creepy BGM Sound</label>
+                        <select id="bgmSelect" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-flow-cyan transition font-semibold cursor-pointer">
+                            <option value="synth">Dark Drone Ambient Synth</option>
+                            <option value="pulse">Creepy Horror Heartbeat</option>
+                            <option value="none">No Background Sound</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- Custom Background Upload -->
-                <div>
-                    <label class="text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1.5 block">Background Media (Optional Video/Image)</label>
-                    <input type="file" id="bgFileInput" accept="video/*,image/*" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl p-2 text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-flow-cyan/20 file:text-flow-cyan hover:file:bg-flow-cyan/30 cursor-pointer">
+                <!-- Storyboard Scene Builder -->
+                <div class="border-t border-slate-800/80 pt-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group text-flow-cyan"></i>
+                            2. Multi-Scene Storyboard Setup
+                        </h3>
+                        <button onclick="addScene()" class="px-3 py-1 bg-flow-cyan/10 text-flow-cyan hover:bg-flow-cyan/20 border border-flow-cyan/30 rounded-lg text-xs font-bold transition">
+                            <i class="fa-solid fa-plus mr-1"></i> Add Scene
+                        </button>
+                    </div>
+
+                    <div id="scenesContainer" class="space-y-3 max-h-[320px] overflow-y-auto pr-1">
+                        <!-- Scene Item 1 -->
+                        <div class="scene-item bg-slate-950/90 border border-slate-800 p-3.5 rounded-xl space-y-2 relative" data-scene="0">
+                            <div class="flex items-center justify-between text-xs font-bold text-slate-400">
+                                <span><i class="fa-solid fa-clapperboard text-flow-cyan mr-1"></i> Scene 1</span>
+                                <button onclick="generateSceneImage(0)" class="text-[10px] bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 border border-purple-500/30 px-2 py-0.5 rounded font-bold transition">
+                                    <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> AI Generate Visual
+                                </button>
+                            </div>
+                            <input type="text" class="scene-prompt w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-flow-cyan" placeholder="Image Prompt (e.g. 1970s retro birthday party with scary clown)" value="In 1974 during a birthday party in a small town, a creepy clown balloon floated by the window.">
+                            <div class="flex items-center gap-2">
+                                <input type="file" accept="image/*,video/*" onchange="handleSceneMediaUpload(event, 0)" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:bg-slate-800 file:text-slate-300 hover:file:bg-slate-700">
+                                <span class="scene-preview-status text-[10px] text-emerald-400 font-bold hidden"><i class="fa-solid fa-check"></i> Loaded</span>
+                            </div>
+                        </div>
+
+                        <!-- Scene Item 2 -->
+                        <div class="scene-item bg-slate-950/90 border border-slate-800 p-3.5 rounded-xl space-y-2 relative" data-scene="1">
+                            <div class="flex items-center justify-between text-xs font-bold text-slate-400">
+                                <span><i class="fa-solid fa-clapperboard text-flow-cyan mr-1"></i> Scene 2</span>
+                                <button onclick="generateSceneImage(1)" class="text-[10px] bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 border border-purple-500/30 px-2 py-0.5 rounded font-bold transition">
+                                    <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> AI Generate Visual
+                                </button>
+                            </div>
+                            <input type="text" class="scene-prompt w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-flow-cyan" placeholder="Image Prompt" value="Two young boys vanished into the dark cellar crawlspace following a mysterious voice.">
+                            <div class="flex items-center gap-2">
+                                <input type="file" accept="image/*,video/*" onchange="handleSceneMediaUpload(event, 1)" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:bg-slate-800 file:text-slate-300 hover:file:bg-slate-700">
+                                <span class="scene-preview-status text-[10px] text-emerald-400 font-bold hidden"><i class="fa-solid fa-check"></i> Loaded</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Script Input -->
+                <!-- Full Script Input -->
                 <div>
-                    <label class="text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1.5 block">Shorts Video Voiceover Script</label>
-                    <textarea id="scriptInput" rows="4" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 text-xs text-slate-100 focus:outline-none focus:border-flow-cyan transition placeholder-slate-600 resize-none font-medium leading-relaxed" placeholder="Type or paste your viral script here...">Deep in the Pacific ocean lies the Mariana Trench. A place darker than outer space. The pressure is a thousand times greater than the surface.</textarea>
+                    <label class="text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1.5 block">Full Voiceover Script</label>
+                    <textarea id="scriptInput" rows="3" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl p-3 text-xs text-slate-100 focus:outline-none focus:border-flow-cyan transition placeholder-slate-600 resize-none font-medium leading-relaxed">In 1974 during a birthday party in a small town, a creepy clown balloon floated by the window. 🤡 Two young boys vanished into the dark cellar crawlspace following a mysterious ghost voice. 👻 Police never found them. 🕵️</textarea>
                 </div>
 
-                <!-- Generate Action Button -->
-                <button onclick="generateShortVideo()" id="generateBtn" class="gradient-btn w-full py-4 px-6 rounded-xl font-extrabold text-xs text-white uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl cursor-pointer">
+                <!-- Action Button -->
+                <button onclick="generateShortVideoPro()" id="generateBtn" class="gradient-btn w-full py-4 px-6 rounded-xl font-extrabold text-xs text-white uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl cursor-pointer">
                     <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
-                    <span>Generate Short with Precise Captions</span>
+                    <span>Generate Multi-Scene Short + Nightline Captions</span>
                 </button>
 
                 <!-- Status Feedback Bar -->
                 <div id="statusBox" class="hidden p-3.5 rounded-xl text-xs font-bold flex items-center gap-2.5 transition">
                     <i id="statusIcon" class="fa-solid fa-circle-notch animate-spin text-sm"></i>
                     <span id="statusText">Initializing pipeline...</span>
-                </div>
-            </div>
-
-            <!-- Highlights -->
-            <div class="glass-card rounded-2xl p-5 grid grid-cols-3 gap-3 text-center">
-                <div class="p-3 bg-slate-900/40 rounded-xl border border-slate-800">
-                    <i class="fa-solid fa-clock-rotate-left text-flow-cyan text-lg mb-1 block"></i>
-                    <span class="text-[11px] font-bold text-slate-300">Exact Word Timestamps</span>
-                </div>
-                <div class="p-3 bg-slate-900/40 rounded-xl border border-slate-800">
-                    <i class="fa-solid fa-font text-flow-lime text-lg mb-1 block"></i>
-                    <span class="text-[11px] font-bold text-slate-300">Viral Montserrat Font</span>
-                </div>
-                <div class="p-3 bg-slate-900/40 rounded-xl border border-slate-800">
-                    <i class="fa-solid fa-mobile-screen text-flow-purple text-lg mb-1 block"></i>
-                    <span class="text-[11px] font-bold text-slate-300">Pop-in Active Word</span>
                 </div>
             </div>
 
@@ -197,7 +217,7 @@
                 <div class="w-full flex items-center justify-between mb-4">
                     <h2 class="text-xs font-extrabold flex items-center gap-2">
                         <i class="fa-solid fa-mobile-screen-button text-flow-cyan"></i>
-                        Live Studio Player (9:16 TikTok / Reels)
+                        Live Studio Player (9:16 Short)
                     </h2>
                     <span id="canvasBadge" class="text-[10px] bg-slate-900 text-flow-cyan px-2.5 py-1 rounded-full font-mono border border-slate-800 font-bold">1080 x 1920</span>
                 </div>
@@ -214,10 +234,10 @@
 
                 <!-- Download Link -->
                 <div class="w-full mt-6 space-y-3 border-t border-slate-800/80 pt-5">
-                    <a id="downloadLink" download="Viral_Short_ElevenLabs.webm" class="hidden w-full">
+                    <a id="downloadLink" download="Nightline_Horror_Short.webm" class="hidden w-full">
                         <button class="w-full py-3.5 px-5 bg-emerald-600 hover:bg-emerald-500 font-extrabold text-xs rounded-xl text-white transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/40 cursor-pointer">
                             <i class="fa-solid fa-download text-sm"></i>
-                            Download Generated Video (.webm)
+                            Download WebM Video
                         </button>
                     </a>
                 </div>
@@ -228,8 +248,6 @@
 
     </main>
 
-    <video id="bgVideoElement" class="hidden" loop muted playsinline></video>
-
     <script>
         // DOM Elements
         const canvas = document.getElementById('videoCanvas');
@@ -237,7 +255,7 @@
         const apiKeyInput = document.getElementById('apiKey');
         const voiceSelect = document.getElementById('voiceSelect');
         const subtitleStyleSelect = document.getElementById('subtitleStyleSelect');
-        const bgFileInput = document.getElementById('bgFileInput');
+        const bgmSelect = document.getElementById('bgmSelect');
         const scriptInput = document.getElementById('scriptInput');
         const generateBtn = document.getElementById('generateBtn');
         const statusBox = document.getElementById('statusBox');
@@ -245,36 +263,113 @@
         const statusText = document.getElementById('statusText');
         const downloadLink = document.getElementById('downloadLink');
         const liveStatusText = document.getElementById('liveStatusText');
-        const bgVideoElement = document.getElementById('bgVideoElement');
 
-        // State Variables
-        let customMedia = null;
-        let isVideoMedia = false;
+        // Scene State
+        let scenes = [
+            { media: null, isVideo: false, prompt: "In 1974 during a birthday party in a small town, a creepy clown balloon floated by the window." },
+            { media: null, isVideo: false, prompt: "Two young boys vanished into the dark cellar crawlspace following a mysterious ghost voice." }
+        ];
+        let activeSceneIndex = 0;
         let renderAnimationId = null;
 
-        // Custom Background Upload Handler
-        bgFileInput.addEventListener('change', (e) => {
+        // Auto Keyword Emoji Map for Nightline Horror
+        const EMOJI_MAP = {
+            "CLOWN": "🤡", "BALLOON": "🎈", "BOYS": "👦", "CELLAR": "🏚️", "POLICE": "🕵️",
+            "GHOST": "👻", "HOUSE": "🏠", "PARTY": "🎉", "DARK": "🌑", "VOICE": "🗣️",
+            "CREEPY": "😱", "TOWN": "🏙️", "WINDOW": "🪟", "CAR": "🚗", "MONSTER": "👹"
+        };
+
+        function addScene() {
+            const idx = scenes.length;
+            scenes.push({ media: null, isVideo: false, prompt: "New scene prompt" });
+
+            const scenesContainer = document.getElementById('scenesContainer');
+            const sceneDiv = document.createElement('div');
+            sceneDiv.className = 'scene-item bg-slate-950/90 border border-slate-800 p-3.5 rounded-xl space-y-2 relative';
+            sceneDiv.setAttribute('data-scene', idx);
+            sceneDiv.innerHTML = `
+                <div class="flex items-center justify-between text-xs font-bold text-slate-400">
+                    <span><i class="fa-solid fa-clapperboard text-flow-cyan mr-1"></i> Scene ${idx + 1}</span>
+                    <button onclick="generateSceneImage(${idx})" class="text-[10px] bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 border border-purple-500/30 px-2 py-0.5 rounded font-bold transition">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> AI Generate Visual
+                    </button>
+                </div>
+                <input type="text" class="scene-prompt w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-flow-cyan" value="Dark creepy atmosphere visual scene ${idx + 1}">
+                <div class="flex items-center gap-2">
+                    <input type="file" accept="image/*,video/*" onchange="handleSceneMediaUpload(event, ${idx})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:bg-slate-800 file:text-slate-300 hover:file:bg-slate-700">
+                    <span class="scene-preview-status text-[10px] text-emerald-400 font-bold hidden"><i class="fa-solid fa-check"></i> Loaded</span>
+                </div>
+            `;
+            scenesContainer.appendChild(sceneDiv);
+        }
+
+        function handleSceneMediaUpload(e, sceneIdx) {
             const file = e.target.files[0];
             if (!file) return;
 
             const url = URL.createObjectURL(file);
+            const statusEl = document.querySelectorAll('.scene-preview-status')[sceneIdx];
+
             if (file.type.startsWith('video/')) {
-                bgVideoElement.src = url;
-                bgVideoElement.onloadedmetadata = () => {
-                    bgVideoElement.play().catch(err => console.log('Video play error:', err));
-                };
-                customMedia = bgVideoElement;
-                isVideoMedia = true;
+                const video = document.createElement('video');
+                video.src = url;
+                video.loop = true;
+                video.muted = true;
+                video.playsInline = true;
+                video.onloadedmetadata = () => video.play();
+                scenes[sceneIdx].media = video;
+                scenes[sceneIdx].isVideo = true;
             } else {
                 const img = new Image();
                 img.src = url;
                 img.onload = () => {
-                    customMedia = img;
-                    isVideoMedia = false;
-                    drawCanvasFrame(0, null);
+                    scenes[sceneIdx].media = img;
+                    scenes[sceneIdx].isVideo = false;
                 };
             }
-        });
+
+            if (statusEl) statusEl.classList.remove('hidden');
+        }
+
+        // Generates scene background image using Gemini 3.1 Flash Lite Image
+        async function generateSceneImage(sceneIdx) {
+            const promptInputs = document.querySelectorAll('.scene-prompt');
+            const prompt = promptInputs[sceneIdx]?.value || scenes[sceneIdx].prompt;
+
+            updateStatus(`🎨 Generating visual for Scene ${sceneIdx + 1}...`);
+            try {
+                const apiKey = ""; // Canvas runtime provides this
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-image:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `High quality vertical 9:16 dark cinematic horror retro scene, 1970s atmosphere: ${prompt}` }] }],
+                        generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+                    })
+                });
+
+                const result = await response.json();
+                const base64Data = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+
+                if (!base64Data) throw new Error("Could not generate image.");
+
+                const img = new Image();
+                img.src = `data:image/png;base64,${base64Data}`;
+                img.onload = () => {
+                    scenes[sceneIdx].media = img;
+                    scenes[sceneIdx].isVideo = false;
+                    const statusEl = document.querySelectorAll('.scene-preview-status')[sceneIdx];
+                    if (statusEl) statusEl.classList.remove('hidden');
+                    updateStatus(`✅ Scene ${sceneIdx + 1} Visual Ready!`, "success");
+                    drawCanvasFrame(0, null, 0);
+                };
+            } catch (err) {
+                console.error(err);
+                updateStatus(`Failed to generate visual for Scene ${sceneIdx + 1}`, "error");
+            }
+        }
 
         function updateStatus(message, type = 'info') {
             statusBox.classList.remove('hidden', 'bg-red-500/10', 'text-red-400', 'border-red-500/20', 'bg-emerald-500/10', 'text-emerald-400', 'border-emerald-500/20', 'bg-slate-900', 'text-amber-400', 'border-slate-800');
@@ -293,7 +388,7 @@
             statusText.innerText = message;
         }
 
-        // Fetches TTS with word-level timestamps using with_timestamps endpoint
+        // Fetch ElevenLabs with Word Timestamps
         async function fetchElevenLabsWithTimestamps(text, apiKey, voiceId) {
             const cleanKey = apiKey.trim();
             const cleanVoice = voiceId.trim();
@@ -308,22 +403,16 @@
                 body: JSON.stringify({
                     text: text,
                     model_id: "eleven_multilingual_v2",
-                    voice_settings: {
-                        stability: 0.5,
-                        similarity_boost: 0.75
-                    }
+                    voice_settings: { stability: 0.5, similarity_boost: 0.75 }
                 })
             });
 
             if (!response.ok) {
                 const errJson = await response.json().catch(() => ({}));
-                const errMsg = errJson?.detail?.message || `ElevenLabs API Error: ${response.status} ${response.statusText}`;
-                throw new Error(errMsg);
+                throw new Error(errJson?.detail?.message || `ElevenLabs Error: ${response.status}`);
             }
 
             const data = await response.json();
-            
-            // Reconstruct Audio URL from Base64
             const audioBytes = atob(data.audio_base64);
             const arrayBuffer = new ArrayBuffer(audioBytes.length);
             const uint8Array = new Uint8Array(arrayBuffer);
@@ -333,13 +422,10 @@
             const audioBlob = new Blob([uint8Array], { type: 'audio/mpeg' });
             const audioUrl = URL.createObjectURL(audioBlob);
 
-            // Process alignment data to create word-level start/end timing arrays
             const wordTimings = processAlignmentToWordTimings(data.alignment);
-
             return { audioUrl, wordTimings };
         }
 
-        // Align character timestamps into words
         function processAlignmentToWordTimings(alignment) {
             if (!alignment || !alignment.characters) return [];
 
@@ -354,9 +440,7 @@
 
             for (let i = 0; i < chars.length; i++) {
                 const char = chars[i];
-                if (wordStart === null && char.trim() !== "") {
-                    wordStart = starts[i];
-                }
+                if (wordStart === null && char.trim() !== "") wordStart = starts[i];
 
                 if (char === " " || char === "\n" || i === chars.length - 1) {
                     if (i === chars.length - 1 && char.trim() !== "") {
@@ -367,8 +451,11 @@
                     }
 
                     if (currentWord.trim().length > 0) {
+                        let cleanW = currentWord.trim().toUpperCase();
+                        let emoji = EMOJI_MAP[cleanW.replace(/[^A-Z]/g, '')] || "";
                         wordList.push({
-                            word: currentWord.trim().toUpperCase(),
+                            word: cleanW + (emoji ? ` ${emoji}` : ""),
+                            rawWord: cleanW,
                             start: wordStart !== null ? wordStart : 0,
                             end: wordEnd !== null ? wordEnd : wordStart + 0.3
                         });
@@ -383,13 +470,12 @@
                 }
             }
 
-            // Group into 2-3 word logical subtitle phrases for clean TikTok formatting
             const phraseGroups = [];
             let tempGroup = [];
 
             for (let i = 0; i < wordList.length; i++) {
                 tempGroup.push(wordList[i]);
-                if (tempGroup.length >= 3 || i === wordList.length - 1 || wordList[i].word.includes(".") || wordList[i].word.includes("?")) {
+                if (tempGroup.length >= 2 || i === wordList.length - 1 || wordList[i].word.includes(".") || wordList[i].word.includes("?")) {
                     phraseGroups.push({
                         words: [...tempGroup],
                         start: tempGroup[0].start,
@@ -402,63 +488,60 @@
             return phraseGroups;
         }
 
-        function drawCanvasFrame(time, activePhrase) {
+        function drawCanvasFrame(time, activePhrase, currentSceneIdx = 0) {
             const w = canvas.width;
             const h = canvas.height;
 
-            // 1. Background
-            if (customMedia) {
-                if (isVideoMedia && bgVideoElement.readyState >= 2) {
-                    ctx.drawImage(bgVideoElement, 0, 0, w, h);
-                } else if (!isVideoMedia) {
-                    ctx.drawImage(customMedia, 0, 0, w, h);
+            const currentScene = scenes[currentSceneIdx] || scenes[0];
+
+            // 1. Ken Burns Zoom Effect Calculation
+            ctx.save();
+            const scale = 1.0 + (time * 0.04) % 0.15; // Slow continuous zoom in
+            ctx.translate(w / 2, h / 2);
+            ctx.scale(scale, scale);
+            ctx.translate(-w / 2, -h / 2);
+
+            if (currentScene && currentScene.media) {
+                if (currentScene.isVideo && currentScene.media.readyState >= 2) {
+                    ctx.drawImage(currentScene.media, 0, 0, w, h);
+                } else if (!currentScene.isVideo) {
+                    ctx.drawImage(currentScene.media, 0, 0, w, h);
                 }
             } else {
-                // Sleek Gradient Background
+                // Procedural Nightline Creepy Background
                 const grad = ctx.createLinearGradient(0, 0, w, h);
-                grad.addColorStop(0, '#0a0f1d');
-                grad.addColorStop(0.5, '#070a14');
-                grad.addColorStop(1, '#020307');
+                grad.addColorStop(0, '#0a030d');
+                grad.addColorStop(0.5, '#050711');
+                grad.addColorStop(1, '#020205');
                 ctx.fillStyle = grad;
                 ctx.fillRect(0, 0, w, h);
-
-                // Subtle particle dots
-                for (let i = 0; i < 20; i++) {
-                    const px = (Math.sin(i * 99 + time * 0.5) * 0.5 + 0.5) * w;
-                    const py = (Math.cos(i * 33 + time * 0.3) * 0.5 + 0.5) * h;
-                    ctx.beginPath();
-                    ctx.arc(px, py, (i % 3 + 1) * 4, 0, Math.PI * 2);
-                    ctx.fillStyle = i % 2 === 0 ? 'rgba(0, 242, 254, 0.15)' : 'rgba(124, 58, 237, 0.15)';
-                    ctx.fill();
-                }
             }
+            ctx.restore();
 
-            // Dark subtle vignette gradient for video readability
-            const vignette = ctx.createRadialGradient(w / 2, h / 2, h * 0.2, w / 2, h / 2, h * 0.7);
-            vignette.addColorStop(0, 'rgba(0, 0, 0, 0.1)');
-            vignette.addColorStop(1, 'rgba(0, 0, 0, 0.75)');
+            // Dark Nightline Contrast Overlay & Vignette
+            const vignette = ctx.createRadialGradient(w / 2, h / 2, h * 0.2, w / 2, h / 2, h * 0.75);
+            vignette.addColorStop(0, 'rgba(0, 0, 0, 0.25)');
+            vignette.addColorStop(1, 'rgba(0, 0, 0, 0.88)');
             ctx.fillStyle = vignette;
             ctx.fillRect(0, 0, w, h);
 
-            // 2. Render Modern High-Retention Subtitles
+            // 2. Render Nightline Center Animated Captions
             if (activePhrase && activePhrase.words && activePhrase.words.length > 0) {
-                drawModernCaptions(activePhrase, time);
+                drawNightlineCaptions(activePhrase, time);
             }
         }
 
-        // Modern Alex Hormozi / MrBeast Style Subtitles (Pop-in active word)
-        function drawModernCaptions(phrase, currentTime) {
+        function drawNightlineCaptions(phrase, currentTime) {
             ctx.save();
 
             const style = subtitleStyleSelect.value;
             const words = phrase.words;
-            const lineY = canvas.height * 0.65;
+            const lineY = canvas.height * 0.50; // Centered for Nightline Horror Short style
             
-            ctx.font = '900 84px "Montserrat", sans-serif';
+            ctx.font = '900 92px "Montserrat", sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
-            // Calculate total width of phrase for centering
             let totalWidth = 0;
             const wordMetrics = words.map(wObj => {
                 const width = ctx.measureText(wObj.word).width;
@@ -466,20 +549,18 @@
                 return { ...wObj, width };
             });
 
-            const gap = 28;
+            const gap = 32;
             totalWidth += gap * (words.length - 1);
-
             let startX = (canvas.width - totalWidth) / 2;
 
-            // Render subtle dark ambient blur box under current phrase (No heavy borders)
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
-            ctx.filter = 'blur(20px)';
+            // Ambient dark backing box for readability
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+            ctx.filter = 'blur(15px)';
             ctx.beginPath();
-            ctx.roundRect((canvas.width - totalWidth) / 2 - 40, lineY - 60, totalWidth + 80, 120, 30);
+            ctx.roundRect((canvas.width - totalWidth) / 2 - 30, lineY - 70, totalWidth + 60, 140, 24);
             ctx.fill();
             ctx.filter = 'none';
 
-            // Render Words with Pop-in scale animation for active word
             wordMetrics.forEach((wObj) => {
                 const isActive = currentTime >= wObj.start && currentTime <= wObj.end + 0.05;
                 const wordCenterX = startX + wObj.width / 2;
@@ -488,28 +569,25 @@
                 ctx.translate(wordCenterX, lineY);
 
                 if (isActive) {
-                    // Pop-in spring scale
                     const activeProgress = Math.min((currentTime - wObj.start) / 0.1, 1);
-                    const scale = 1.0 + Math.sin(activeProgress * Math.PI) * 0.12;
+                    const scale = 1.0 + Math.sin(activeProgress * Math.PI) * 0.18;
                     ctx.scale(scale, scale);
                 }
 
-                // Shadow & Stroke
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-                ctx.shadowBlur = 18;
-                ctx.shadowOffsetY = 6;
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
+                ctx.shadowBlur = 20;
+                ctx.shadowOffsetY = 8;
 
                 ctx.strokeStyle = '#000000';
-                ctx.lineWidth = 12;
+                ctx.lineWidth = 14;
                 ctx.strokeText(wObj.word, 0, 0);
 
-                // Color Schemes
-                if (style === 'hormozi') {
-                    ctx.fillStyle = isActive ? '#22c55e' : '#ffffff'; // Vibrant Emerald Green for active word
-                } else if (style === 'mrbeast') {
+                if (style === 'nightline') {
                     ctx.fillStyle = isActive ? '#facc15' : '#ffffff'; // Neon Yellow
+                } else if (style === 'hormozi') {
+                    ctx.fillStyle = isActive ? '#22c55e' : '#ffffff'; // Emerald
                 } else {
-                    ctx.fillStyle = isActive ? '#00f2fe' : '#e2e8f0'; // Cyan
+                    ctx.fillStyle = isActive ? '#00f2fe' : '#ffffff'; // Cyan
                 }
 
                 ctx.fillText(wObj.word, 0, 0);
@@ -522,7 +600,25 @@
             ctx.restore();
         }
 
-        async function generateShortVideo() {
+        // Web Audio Synth Creepy BGM Generator
+        function playCreepyBGM(audioCtx) {
+            const bgmType = bgmSelect.value;
+            if (bgmType === 'none') return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(55, audioCtx.currentTime); // Low creepy A1 pitch
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+        }
+
+        // Main Generation Workflow
+        async function generateShortVideoPro() {
             const apiKey = apiKeyInput.value.trim();
             const voiceId = voiceSelect.value;
             const scriptText = scriptInput.value.trim();
@@ -539,38 +635,30 @@
             generateBtn.disabled = true;
             generateBtn.classList.add('opacity-50', 'cursor-not-allowed');
             downloadLink.classList.add('hidden');
-            liveStatusText.innerText = "Syncing Speech...";
+            liveStatusText.innerText = "Syncing...";
 
             try {
-                updateStatus("🎙️ Requesting ElevenLabs TTS with word-level timestamps...");
-                
-                // 1. Fetch ElevenLabs Speech with Timestamps
+                updateStatus("🎙️ Requesting ElevenLabs TTS with precise word timings...");
                 const { audioUrl, wordTimings } = await fetchElevenLabsWithTimestamps(scriptText, apiKey, voiceId);
-                
-                if (!wordTimings || wordTimings.length === 0) {
-                    throw new Error("Failed to extract word timings from ElevenLabs API.");
-                }
 
-                updateStatus("🔊 Timestamps aligned! Setting up canvas recorder...");
-                
+                updateStatus("🔊 Audio loaded! Initializing Web Audio & BGM Engine...");
                 const audio = new Audio(audioUrl);
                 await new Promise(resolve => audio.onloadedmetadata = resolve);
 
-                // 2. Setup Web Audio Destination
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const source = audioCtx.createMediaElementSource(audio);
                 const audioDest = audioCtx.createMediaStreamDestination();
+
                 source.connect(audioDest);
                 source.connect(audioCtx.destination);
+                playCreepyBGM(audioCtx);
 
-                // 3. Media Stream Capture
                 const canvasStream = canvas.captureStream(30);
                 const combinedStream = new MediaStream([
                     ...canvasStream.getVideoTracks(),
                     ...audioDest.stream.getAudioTracks()
                 ]);
 
-                // 4. MediaRecorder Setup
                 let mediaRecorder;
                 const recordedChunks = [];
                 try {
@@ -579,31 +667,21 @@
                     mediaRecorder = new MediaRecorder(combinedStream);
                 }
 
-                mediaRecorder.ondataavailable = e => {
-                    if (e.data.size > 0) recordedChunks.push(e.data);
-                };
-
+                mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
                 mediaRecorder.onstop = () => {
                     const blob = new Blob(recordedChunks, { type: 'video/webm' });
                     downloadLink.href = URL.createObjectURL(blob);
                     downloadLink.classList.remove('hidden');
-                    updateStatus("✅ Viral Short generated & ready for download!", "success");
+                    updateStatus("✅ Multi-Scene Short generated successfully!", "success");
                     liveStatusText.innerText = "Completed";
-                    
                     generateBtn.disabled = false;
                     generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 };
 
-                // 5. Playback & Recording Loop
-                if (isVideoMedia && bgVideoElement) {
-                    bgVideoElement.currentTime = 0;
-                    bgVideoElement.play().catch(e => console.log(e));
-                }
-
                 mediaRecorder.start();
                 audio.play();
                 liveStatusText.innerText = "Recording...";
-                updateStatus("🎥 Recording 9:16 Video stream with active word sync...");
+                updateStatus("🎥 Recording 9:16 Video stream with multi-scene transitions...");
 
                 const totalDuration = audio.duration;
                 const startTime = Date.now();
@@ -611,43 +689,41 @@
                 function renderLoop() {
                     const elapsed = (Date.now() - startTime) / 1000;
 
-                    // Find active word phrase based on current audio time
+                    // Multi-scene timing split
+                    const currentSceneIdx = Math.min(Math.floor((elapsed / totalDuration) * scenes.length), scenes.length - 1);
+
                     const activePhrase = wordTimings.find(p => elapsed >= p.start && elapsed <= p.end) || 
                                          wordTimings.find(p => elapsed < p.start) || 
                                          wordTimings[wordTimings.length - 1];
 
-                    drawCanvasFrame(elapsed, activePhrase);
+                    drawCanvasFrame(elapsed, activePhrase, currentSceneIdx);
 
                     if (!audio.ended && elapsed < totalDuration + 0.3) {
                         renderAnimationId = requestAnimationFrame(renderLoop);
                     } else {
                         cancelAnimationFrame(renderAnimationId);
-                        if (mediaRecorder.state !== 'inactive') {
-                            mediaRecorder.stop();
-                        }
+                        if (mediaRecorder.state !== 'inactive') mediaRecorder.stop();
                     }
                 }
 
                 renderLoop();
 
             } catch (err) {
-                console.error("Studio Error:", err);
-                updateStatus(err.message || "Failed to generate short video.", "error");
+                console.error(err);
+                updateStatus(err.message || "Failed to generate video.", "error");
                 liveStatusText.innerText = "Error";
                 generateBtn.disabled = false;
                 generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             }
         }
 
-        // Initial Preview Frame
         window.onload = () => {
             drawCanvasFrame(0, {
                 words: [
-                    { word: "VIRAL", start: 0, end: 1 },
-                    { word: "SHORTS", start: 0, end: 1 },
-                    { word: "STUDIO", start: 0, end: 1 }
+                    { word: "NIGHTLINE 🤡", start: 0, end: 1 },
+                    { word: "HORROR 👻", start: 0, end: 1 }
                 ]
-            });
+            }, 0);
         };
     </script>
 </body>
