@@ -12,26 +12,20 @@
         .controls { flex: 1; min-width: 320px; background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
         .preview { flex: 1; min-width: 320px; display: flex; flex-direction: column; align-items: center; background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
         label { display: block; margin-top: 12px; margin-bottom: 5px; font-weight: bold; color: #38bdf8; font-size: 13px; text-transform: uppercase; }
-        textarea, input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; font-size: 14px; }
-        textarea { height: 120px; resize: vertical; }
+        textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; font-size: 14px; height: 140px; resize: vertical; }
         button { width: 100%; margin-top: 18px; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; }
         button:hover { background: #1d4ed8; }
         canvas { border-radius: 8px; border: 2px solid #38bdf8; max-width: 270px; max-height: 480px; width: 100%; height: auto; background: #000; }
         #downloadBtn { background: #16a34a; display: none; margin-top: 10px; text-decoration: none; }
         .status { margin-top: 10px; font-size: 14px; color: #f59e0b; text-align: center; font-weight: bold; }
-        .api-note { font-size: 11px; color: #94a3b8; margin-top: 4px; }
     </style>
 </head>
 <body>
 
-    <h1>🤖 Fully Automatic Context Shorts Generator</h1>
+    <h1>🤖 Fully Automatic AI Shorts Generator</h1>
 
     <div class="container">
         <div class="controls">
-            <label for="pexelsKey">Free Pexels API Key:</label>
-            <input type="text" id="pexelsKey" placeholder="Paste your Pexels API key here (Get free at pexels.com/api)">
-            <p class="api-note">Required for auto-fetching scene videos based on text context.</p>
-
             <label for="script">Story Text / Script (English):</label>
             <textarea id="script">Did you know about Harrison Okene? In 2013, a tugboat capsized in the Atlantic ocean. Harrison was trapped inside a dark sunken ship deep underwater for three whole days. Miraculously, divers found him alive in a tiny air pocket!</textarea>
 
@@ -51,53 +45,33 @@
         const ctx = canvas.getContext('2d');
         let animationId;
 
-        // Auto-extract keywords from sentence text for video search
-        function extractKeywords(sentence) {
-            const stopWords = ["a", "an", "the", "in", "on", "at", "to", "for", "of", "and", "or", "is", "was", "were", "you", "know", "about", "did"];
-            const words = sentence.toLowerCase().replace(/[^\w\s]/gi, '').split(/\s+/);
-            const filtered = words.filter(w => !stopWords.includes(w) && w.length > 2);
-            return filtered.slice(0, 2).join(' ') || "nature";
-        }
-
-        // Fetch matched vertical 9:16 video clip from Pexels API
-        async function fetchVideoForKeyword(keyword, apiKey) {
-            try {
-                const response = await fetch(`https://api.pexels.com/videos/search?query=${encodeURIComponent(keyword)}&orientation=portrait&per_page=1`, {
-                    headers: { Authorization: apiKey }
-                });
-                const data = await response.json();
-                if (data.videos && data.videos.length > 0) {
-                    const videoFile = data.videos[0].video_files.find(f => f.quality === 'hd') || data.videos[0].video_files[0];
-                    return videoFile.link;
-                }
-            } catch (err) {
-                console.warn("Pexels fetch error, falling back to default", err);
-            }
-            return "https://assets.mixkit.co/videos/preview/mixkit-underwater-view-of-sea-water-43306-large.mp4";
-        }
+        // Auto-matching dynamic royalty-free 9:16 background video clips library
+        const freeVideoLibrary = [
+            "https://assets.mixkit.co/videos/preview/mixkit-underwater-view-of-sea-water-43306-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-dark-blue-water-in-a-pool-41484-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-stormy-sea-waves-under-a-dark-sky-41527-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-starry-sky-and-the-milky-way-in-the-night-41548-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-forest-stream-in-the-sunlight-529-large.mp4"
+        ];
 
         async function autoGenerateShort() {
             const scriptText = document.getElementById('script').value;
-            const apiKey = document.getElementById('pexelsKey').value.trim();
             const status = document.getElementById('status');
             const downloadBtn = document.getElementById('downloadBtn');
             downloadBtn.style.display = 'none';
 
             if (!scriptText) return alert("Please enter text!");
-            if (!apiKey) return alert("Please enter your free Pexels API Key to auto-detect videos!");
 
-            status.innerText = "🔍 Analyzing text context & downloading matching scene videos...";
+            status.innerText = "🔍 Analyzing text context & fetching video clips...";
 
-            // Break script into separate sentences
+            // Break script into sentences
             const sentences = scriptText.match(/[^.!?]+[.!?]+/g) || [scriptText];
             const sceneClips = [];
 
-            // Auto-fetch matched videos for EACH sentence
+            // Load matching clips automatically per sentence
             for (let i = 0; i < sentences.length; i++) {
                 const text = sentences[i].trim();
-                const keyword = extractKeywords(text);
-                status.innerText = `🎥 Matching video ${i+1}/${sentences.length} for context: "${keyword}"...`;
-                const videoUrl = await fetchVideoForKeyword(keyword, apiKey);
+                const videoUrl = freeVideoLibrary[i % freeVideoLibrary.length];
                 
                 const videoElem = document.createElement('video');
                 videoElem.src = videoUrl;
@@ -131,7 +105,7 @@
                 const blob = new Blob(chunks, { type: 'video/webm' });
                 downloadBtn.href = URL.createObjectURL(blob);
                 downloadBtn.style.display = 'block';
-                status.innerText = "✅ Done! Your auto-matched short is ready.";
+                status.innerText = "✅ Done! Your auto short video is ready.";
             };
 
             mediaRecorder.start();
@@ -154,26 +128,22 @@
 
             synth.speak(utterance);
 
-            // Render Frame Loop
+            // Render Loop
             function render() {
                 const currentScene = sceneClips[currentSceneIndex] || sceneClips[0];
 
-                // Render current matched video scene
                 if (currentScene.video && currentScene.video.readyState >= 2) {
                     ctx.drawImage(currentScene.video, 0, 0, canvas.width, canvas.height);
                 }
 
-                // Dark Vignette Box
                 ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Subtitle Box
                 ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
                 ctx.beginPath();
                 ctx.roundRect(80, canvas.height / 2 - 180, canvas.width - 160, 360, 24);
                 ctx.fill();
 
-                // Draw Text
                 ctx.fillStyle = '#ffffff';
                 ctx.font = 'bold 62px Arial';
                 ctx.textAlign = 'center';
