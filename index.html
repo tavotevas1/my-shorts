@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlowShorts AI Studio - Fully Working</title>
+    <title>FlowShorts AI Studio</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
         body { background: #090d16; color: #f8fafc; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
@@ -14,7 +14,7 @@
         label { display: block; margin-top: 15px; margin-bottom: 6px; font-weight: 700; color: #38bdf8; font-size: 13px; text-transform: uppercase; }
         textarea, input, button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #374151; background: #030712; color: #fff; font-size: 14px; }
         textarea { height: 110px; resize: vertical; }
-        button { margin-top: 20px; padding: 15px; background: #2563eb; color: white; border: none; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 4px 14px rgba(37,99,235,0.4); }
+        button { margin-top: 20px; padding: 15px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 800; font-size: 16px; cursor: pointer; }
         button:hover { background: #1d4ed8; }
         canvas { border-radius: 12px; border: 3px solid #38bdf8; max-width: 300px; height: auto; background: #000; box-shadow: 0 0 25px rgba(56,189,248,0.25); }
         #downloadBtn { background: #16a34a; display: none; margin-top: 15px; text-decoration: none; width: 100%; text-align: center; }
@@ -28,15 +28,15 @@
 
     <div class="container">
         <div class="controls">
-            <label for="bgFile">1. Pasirinkite Fono Vaizdo Įrašą arba Nuotrauką (Pasirinktinai):</label>
+            <label for="bgFile">1. Pasirinkite Fono Vaizdo Įrašą (.mp4) arba Nuotrauką:</label>
             <input type="file" id="bgFile" accept="video/*,image/*">
 
-            <label for="script">2. Video Istorija / Scenarijus:</label>
-            <textarea id="script">Harrison was trapped inside a dark sunken ship deep underwater for three whole days.</textarea>
+            <label for="script">2. Video Tekstas / Scenarijus:</label>
+            <textarea id="script">In 1973, a German girl named Anneliese Michel began barking like a dog and speaking in demonic voices. Believing she was possessed, her family called in priests.</textarea>
 
             <button id="generateBtn" onclick="generateShort()">⚡ Generuoti Shorts Video</button>
             <div id="status" class="status"></div>
-            <a id="downloadBtn" download="flowshorts_video.webm"><button>⬇️️ Atsisiųsti Video</button></a>
+            <a id="downloadBtn" download="flowshorts_video.webm"><button>⬇️ Atsisiųsti Paruoštą Video</button></a>
         </div>
 
         <div class="preview">
@@ -50,9 +50,7 @@
         const ctx = canvas.getContext('2d');
         let bgMedia = null;
         let isVideo = false;
-        let animationFrameId;
 
-        // Fono įkėlimo apdorojimas
         document.getElementById('bgFile').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -64,7 +62,9 @@
                 bgMedia.loop = true;
                 bgMedia.muted = true;
                 bgMedia.playsInline = true;
-                bgMedia.play();
+                bgMedia.onloadedmetadata = () => {
+                    bgMedia.play().catch(e => console.log("Video auto-play blocked:", e));
+                };
                 isVideo = true;
             } else {
                 bgMedia = new Image();
@@ -73,25 +73,44 @@
             }
         });
 
-        function generateShort() {
+        async function generateShort() {
             const scriptText = document.getElementById('script').value.trim();
             const status = document.getElementById('status');
             const downloadBtn = document.getElementById('downloadBtn');
 
             if (!scriptText) return alert("Įveskite tekstą!");
 
-            downloadBtn.style.display = 'none';
-            status.innerText = "🎙️️ Ruošiamas įgarsinimas...";
+            // Patikrinam, ar vaizdo įrašas paleistas
+            if (isVideo && bgMedia) {
+                try { await bgMedia.play(); } catch(e) {}
+            }
 
+            downloadBtn.style.display = 'none';
+            status.innerText = "🎙️ Ruošiamas įgarsinimas...";
+
+            // Teksto dalinimas į mažas CapCut frazes (po 3-5 žodžius)
+            const allWords = scriptText.toUpperCase().split(/\s+/);
+            const chunks = [];
+            let currentChunk = [];
+
+            for (let i = 0; i < allWords.length; i++) {
+                currentChunk.push(allWords[i]);
+                if (currentChunk.length >= 4 || i === allWords.length - 1) {
+                    chunks.push(currentChunk.join(" "));
+                    currentChunk = [];
+                }
+            }
+
+            // Įgarsinimas
             const synth = window.speechSynthesis;
             synth.cancel();
             const utterance = new SpeechSynthesisUtterance(scriptText);
             utterance.lang = 'en-US';
-            utterance.rate = 0.95;
+            utterance.rate = 0.9;
 
             const stream = canvas.captureStream(30);
             let mediaRecorder;
-            const chunks = [];
+            const recordedChunks = [];
 
             try {
                 mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
@@ -99,24 +118,29 @@
                 mediaRecorder = new MediaRecorder(stream);
             }
 
-            mediaRecorder.ondataavailable = e => chunks.push(e.data);
+            mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
             mediaRecorder.onstop = () => {
-                const blob = new Blob(chunks, { type: 'video/webm' });
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
                 downloadBtn.href = URL.createObjectURL(blob);
                 downloadBtn.style.display = 'block';
-                status.innerText = "✅ Video sėkmingai sugeneruotas!";
+                status.innerText = "✅ Video sugeneruotas! Atsisiųskite.";
             };
 
             mediaRecorder.start();
             synth.speak(utterance);
-            status.innerText = "🎥 Generuojamas vaizdas ir įrašoma...";
+            status.innerText = "🎥 Įrašoma...";
 
-            let time = 0;
+            const totalDuration = scriptText.length * 0.065; // Apytikslė trukmė sekundėmis
+            const startTime = Date.now();
+            let animId;
 
             function render() {
-                time += 0.03;
+                const elapsed = (Date.now() - startTime) / 1000;
+                const progress = Math.min(elapsed / totalDuration, 0.99);
+                const currentChunkIdx = Math.floor(progress * chunks.length);
+                const activeText = chunks[currentChunkIdx] || chunks[chunks.length - 1];
 
-                // 1. Piesiamas fonas
+                // 1. Piesiamas Vaizdo įrašas arba Animuotas Fonas
                 if (bgMedia) {
                     if (isVideo && bgMedia.readyState >= 2) {
                         ctx.drawImage(bgMedia, 0, 0, canvas.width, canvas.height);
@@ -124,71 +148,40 @@
                         ctx.drawImage(bgMedia, 0, 0, canvas.width, canvas.height);
                     }
                 } else {
-                    // Generuojamas dinaminis animuotas fonas (jei niekas neįkelta)
                     let grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
                     grad.addColorStop(0, '#0f172a');
-                    grad.addColorStop(0.5, '#1e1b4b');
-                    grad.addColorStop(1, '#311042');
+                    grad.addColorStop(1, '#1e1b4b');
                     ctx.fillStyle = grad;
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                    // Judančios šviesos dalelės
-                    ctx.fillStyle = 'rgba(56, 189, 248, 0.25)';
-                    for (let i = 0; i < 20; i++) {
-                        let x = (Math.sin(time + i) * 0.5 + 0.5) * canvas.width;
-                        let y = ((time * 100 + i * 150) % canvas.height);
-                        ctx.beginPath();
-                        ctx.arc(x, y, 30 + (i % 20), 0, Math.PI * 2);
-                        ctx.fill();
-                    }
                 }
 
-                // Tamsinimo sluoksnis subtitrams
+                // Tamsinimas
                 ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // 2. Subtitrų formavimas
-                ctx.font = '900 60px Arial, sans-serif';
+                // 2. Rodoma tik viena trumpa frazė ekrano centre (CapCut stilius)
+                ctx.font = '900 75px Arial, sans-serif';
                 ctx.textAlign = 'center';
 
-                const words = scriptText.toUpperCase().split(' ');
-                let line = '';
-                let lines = [];
-
-                for (let n = 0; n < words.length; n++) {
-                    let testLine = line + words[n] + ' ';
-                    if (ctx.measureText(testLine).width > canvas.width - 200 && n > 0) {
-                        lines.push(line);
-                        line = words[n] + ' ';
-                    } else {
-                        line = testLine;
-                    }
-                }
-                lines.push(line);
-
-                // Subtitrų fono dėžutė
-                const boxHeight = lines.length * 80 + 50;
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+                // Juodas fono kvadratas frazei
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
                 ctx.beginPath();
-                ctx.roundRect(80, canvas.height / 2 - (boxHeight / 2), canvas.width - 160, boxHeight, 20);
+                ctx.roundRect(80, canvas.height / 2 - 90, canvas.width - 160, 180, 20);
                 ctx.fill();
 
-                // Subtitrų tekstas
-                let startY = canvas.height / 2 - ((lines.length - 1) * 40);
-                lines.forEach((l, idx) => {
-                    ctx.lineWidth = 8;
-                    ctx.strokeStyle = '#000000';
-                    ctx.strokeText(l.trim(), canvas.width / 2, startY + (idx * 80));
+                // Geltonas tekstas su juodu apvadų
+                ctx.lineWidth = 10;
+                ctx.strokeStyle = '#000000';
+                ctx.strokeText(activeText, canvas.width / 2, canvas.height / 2 + 25);
 
-                    ctx.fillStyle = '#facc15';
-                    ctx.fillText(l.trim(), canvas.width / 2, startY + (idx * 80));
-                });
+                ctx.fillStyle = '#facc15';
+                ctx.fillText(activeText, canvas.width / 2, canvas.height / 2 + 25);
 
-                if (synth.speaking) {
-                    animationFrameId = requestAnimationFrame(render);
+                if (synth.speaking || elapsed < totalDuration) {
+                    animId = requestAnimationFrame(render);
                 } else {
                     mediaRecorder.stop();
-                    cancelAnimationFrame(animationFrameId);
+                    cancelAnimationFrame(animId);
                 }
             }
 
