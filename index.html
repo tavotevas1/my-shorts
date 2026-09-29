@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free AI Short Video Generator</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #0f172a; color: #f8fafc; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
+        h1 { margin-bottom: 20px; color: #38bdf8; text-align: center; }
+        .container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 1000px; width: 100%; justify-content: center; }
+        .controls { flex: 1; min-width: 300px; background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
+        .preview { flex: 1; min-width: 300px; display: flex; flex-direction: column; align-items: center; background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
+        label { display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold; color: #94a3b8; }
+        textarea, select, input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; font-size: 14px; }
+        textarea { height: 100px; resize: vertical; }
+        button { width: 100%; margin-top: 20px; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        button:hover { background: #1d4ed8; }
+        canvas { border-radius: 8px; border: 2px solid #38bdf8; max-width: 270px; max-height: 480px; width: 100%; height: auto; background: #000; }
+        #downloadBtn { background: #16a34a; display: none; margin-top: 10px; }
+        #downloadBtn:hover { background: #15803d; }
+        .status { margin-top: 10px; font-size: 14px; color: #f59e0b; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <h1>🎬 Free YouTube Short Generator</h1>
+
+    <div class="container">
+        <!-- Controls Panel -->
+        <div class="controls">
+            <label for="script">Script (English):</label>
+            <textarea id="script" placeholder="Enter your text script here... Example: Did you know that space is completely silent? There is no atmosphere in space.">Did you know that space is completely silent? Because there is no atmosphere, sound has no medium or way to travel.</textarea>
+
+            <label for="voiceSelect">Select Voice:</label>
+            <select id="voiceSelect"></select>
+
+            <label for="bgType">Background:</label>
+            <select id="bgType" onchange="toggleBgOption()">
+                <option value="animated">Animated Cyber-Grid (Built-in)</option>
+                <option value="custom">Upload your MP4 / Video</option>
+            </select>
+
+            <div id="fileUploadContainer" style="display: none;">
+                <label for="bgVideoInput">Upload MP4 Video (9:16 recommended):</label>
+                <input type="file" id="bgVideoInput" accept="video/mp4,video/webm">
+            </div>
+
+            <button id="generateBtn" onclick="startGeneration()">⚡ Generate & Render Short</button>
+            <div id="status" class="status"></div>
+            <a id="downloadBtn" download="short_video.webm"><button>⬇️ Download Video</button></a>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="preview">
+            <h3>Preview (9:16 Aspect Ratio)</h3>
+            <canvas id="videoCanvas" width="1080" height="1920"></canvas>
+            <video id="userVideo" loop muted style="display:none;"></video>
+        </div>
+    </div>
+
+    <script>
+        let voices = [];
+        const synth = window.speechSynthesis;
+        const voiceSelect = document.getElementById('voiceSelect');
+        const canvas = document.getElementById('videoCanvas');
+        const ctx = canvas.getContext('2d');
+        let bgAnimationId;
+
+        // Load English Voices
+        function populateVoiceList() {
+            voices = synth.getVoices().filter(voice => voice.lang.startsWith('en'));
+            voiceSelect.innerHTML = '';
+            voices.forEach((voice, index) => {
+                const option = document.createElement('option');
+                option.textContent = `${voice.name} (${voice.lang})`;
+                option.setAttribute('data-index', index);
+                voiceSelect.appendChild(option);
+            });
+        }
+
+        populateVoiceList();
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = populateVoiceList;
+        }
+
+        function toggleBgOption() {
+            const type = document.getElementById('bgType').value;
+            document.getElementById('fileUploadContainer').style.display = type === 'custom' ? 'block' : 'none';
+        }
+
+        // Custom Background Video Handler
+        document.getElementById('bgVideoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                const userVideo = document.getElementById('userVideo');
+                userVideo.src = url;
+                userVideo.play();
+            }
+        });
+
+        // Background Animation (Fallback)
+        let hue = 0;
+        function drawAnimatedBg() {
+            hue = (hue + 0.5) % 360;
+            ctx.fillStyle = `hsl(${hue}, 40%, 10%)`;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            ctx.strokeStyle = `hsl(${hue}, 60%, 30%)`;
+            ctx.lineWidth = 4;
+            const size = 120;
+            for (let x = 0; x < canvas.width; x += size) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += size) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+
+        // Main Generator
+        async function startGeneration() {
+            const scriptText = document.getElementById('script').value;
+            const status = document.getElementById('status');
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.style.display = 'none';
+
+            if (!scriptText) {
+                alert('Please enter a script text!');
+                return;
+            }
+
+            status.innerText = "🔊 Generating voice and rendering video...";
+
+            // Setup Audio Stream
+            const selectedVoiceIndex = voiceSelect.selectedOptions[0]?.getAttribute('data-index');
+            const utterance = new SpeechSynthesisUtterance(scriptText);
+            if (voices[selectedVoiceIndex]) {
+                utterance.voice = voices[selectedVoiceIndex];
+            }
+
+            // Setup Video Stream & Media Recorder
+            const canvasStream = canvas.captureStream(30);
+            const mediaRecorder = new MediaRecorder(canvasStream, { mimeType: 'video/webm' });
+            const chunks = [];
+
+            mediaRecorder.ondataavailable = e => chunks.push(e.data);
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                const videoURL = URL.createObjectURL(blob);
+                downloadBtn.href = videoURL;
+                downloadBtn.style.display = 'block';
+                status.innerText = "✅ Done! Click below to download.";
+            };
+
+            mediaRecorder.start();
+
+            // Speech Synthesis Handling
+            synth.cancel(); // Reset
+            
+            utterance.onboundary = (event) => {
+                // Highlighting or word-sync could go here
+            };
+
+            utterance.onend = () => {
+                setTimeout(() => {
+                    mediaRecorder.stop();
+                    cancelAnimationFrame(bgAnimationId);
+                }, 1000);
+            };
+
+            synth.speak(utterance);
+
+            // Render Frame Loop
+            const userVideo = document.getElementById('userVideo');
+            const bgType = document.getElementById('bgType').value;
+
+            function renderFrame() {
+                if (bgType === 'custom' && userVideo.currentTime) {
+                    ctx.drawImage(userVideo, 0, 0, canvas.width, canvas.height);
+                } else {
+                    drawAnimatedBg();
+                }
+
+                // Render Subtitles Text Overlay
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+                ctx.fillRect(80, canvas.height / 2 - 200, canvas.width - 160, 400);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 52px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                wrapText(ctx, scriptText, canvas.width / 2, canvas.height / 2, canvas.width - 240, 70);
+
+                if (synth.speaking) {
+                    bgAnimationId = requestAnimationFrame(renderFrame);
+                }
+            }
+
+            renderFrame();
+        }
+
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let lines = [];
+
+            for (let n = 0; n < words.length; n++) {
+                let testLine = line + words[n] + ' ';
+                let metrics = context.measureText(testLine);
+                if (metrics.width > maxWidth && n > 0) {
+                    lines.push(line);
+                    line = words[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            lines.push(line);
+
+            let startY = y - ((lines.length - 1) * lineHeight) / 2;
+            for (let k = 0; k < lines.length; k++) {
+                context.fillText(lines[k], x, startY + (k * lineHeight));
+            }
+        }
+    </script>
+</body>
+</html>
