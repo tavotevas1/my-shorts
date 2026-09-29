@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlowShorts AI Studio - Top Tier Captions</title>
+    <title>FlowShorts AI Studio - SDK Edition</title>
+    <!-- ElevenLabs JS SDK per CDN -->
+    <script src="https://unpkg.com/elevenlabs/dist/index.umd.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
         body { background: #090d16; color: #f8fafc; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
@@ -12,9 +14,9 @@
         .controls, .preview { flex: 1; min-width: 340px; background: #111827; padding: 25px; border-radius: 16px; border: 1px solid #1f2937; }
         .preview { display: flex; flex-direction: column; align-items: center; }
         label { display: block; margin-top: 15px; margin-bottom: 6px; font-weight: 700; color: #38bdf8; font-size: 13px; text-transform: uppercase; }
-        textarea, input, button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #374151; background: #030712; color: #fff; font-size: 14px; }
+        textarea, input, select, button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #374151; background: #030712; color: #fff; font-size: 14px; }
         textarea { height: 110px; resize: vertical; }
-        button { margin-top: 20px; padding: 15px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 800; font-size: 16px; cursor: pointer; }
+        button { margin-top: 20px; padding: 15px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.2s; }
         button:hover { background: #1d4ed8; }
         canvas { border-radius: 12px; border: 3px solid #38bdf8; max-width: 300px; height: auto; background: #000; box-shadow: 0 0 25px rgba(56,189,248,0.25); }
         #downloadBtn { background: #16a34a; display: none; margin-top: 15px; text-decoration: none; width: 100%; text-align: center; }
@@ -28,11 +30,22 @@
 
     <div class="container">
         <div class="controls">
-            <label for="bgFile">1. Pasirinkite Fono Vaizdo Įrašą (.mp4) arba Nuotrauką:</label>
+            <label for="apiKey">1. ElevenLabs API Raktas:</label>
+            <input type="password" id="apiKey" placeholder="Įklijuokite savo ElevenLabs API Key...">
+
+            <label for="voiceSelect">2. Pasirinkite AI Balsą:</label>
+            <select id="voiceSelect">
+                <option value="JBFqnCBsd6RMkjVDRZzb">George (Gilus ir dramatiškas)</option>
+                <option value="pNInz6obpgDQGcFmaJgB">Adam (Deep & Storyteller)</option>
+                <option value="21m00Tcm4TlvDq8ikWAM">Rachel (Calm & Clear)</option>
+                <option value="ErXwobaYiN019PkySvjV">Antoni (Narrator)</option>
+            </select>
+
+            <label for="bgFile">3. Fono Vaizdo Įrašas (.mp4) arba Nuotrauka:</label>
             <input type="file" id="bgFile" accept="video/*,image/*">
 
-            <label for="script">2. Video Tekstas / Scenarijus:</label>
-            <textarea id="script">In 1973, a German girl named Anneliese Michel began barking like a dog and speaking in demonic voices. Believing she was possessed, her family called in priests.</textarea>
+            <label for="script">4. Video Tekstas / Scenarijus:</label>
+            <textarea id="script">The first move is what sets everything in motion.</textarea>
 
             <button id="generateBtn" onclick="generateShort()">⚡ Generuoti Shorts Video</button>
             <div id="status" class="status"></div>
@@ -73,21 +86,74 @@
             }
         });
 
+        // ElevenLabs įgarsinimo funkcija naudojant jūsų pateiktą kodo struktūrą
+        async function fetchElevenLabsAudio(text, apiKey, voiceId) {
+            // Inicializuojame ElevenLabs klientą
+            const client = new ElevenLabs.ElevenLabsClient({ apiKey: apiKey });
+
+            // Kviečiame konvertavimo metodą pagal jūsų pavyzdį
+            const audioStream = await client.textToSpeech.convert(voiceId, {
+                text: text,
+                modelId: 'eleven_multilingual_v2',
+                outputFormat: 'mp3_44100_128'
+            });
+
+            // Stream duomenų konvertavimas į naršyklei tinkamą Blob / URL
+            const reader = audioStream.getReader();
+            const chunks = [];
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                chunks.push(value);
+            }
+
+            const blob = new Blob(chunks, { type: 'audio/mp3' });
+            return URL.createObjectURL(blob);
+        }
+
         async function generateShort() {
             const scriptText = document.getElementById('script').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const voiceId = document.getElementById('voiceSelect').value;
             const status = document.getElementById('status');
             const downloadBtn = document.getElementById('downloadBtn');
 
             if (!scriptText) return alert("Įveskite tekstą!");
+            if (!apiKey) return alert("Prašome įvesti ElevenLabs API Raktą!");
 
             if (isVideo && bgMedia) {
                 try { await bgMedia.play(); } catch(e) {}
             }
 
             downloadBtn.style.display = 'none';
-            status.innerText = "🎙️ Ruošiamas įgarsinimas...";
+            status.innerText = "🎙️ Generuojamas ElevenLabs AI balsas...";
 
-            // Frazių skaidymas per 2-3 žodžius
+            let audioUrl;
+            try {
+                audioUrl = await fetchElevenLabsAudio(scriptText, apiKey, voiceId);
+            } catch (err) {
+                console.error(err);
+                status.innerText = "❌ Klaida: Patikrinkite API Raktą arba konsolę.";
+                return;
+            }
+
+            const audio = new Audio(audioUrl);
+            await new Promise(resolve => audio.onloadedmetadata = resolve);
+
+            // Garso nukreipimas į vaizdo įrašymo srautą
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const source = audioCtx.createMediaElementSource(audio);
+            const dest = audioCtx.createMediaStreamDestination();
+            source.connect(dest);
+            source.connect(audioCtx.destination);
+
+            const canvasStream = canvas.captureStream(30);
+            const combinedStream = new MediaStream([
+                ...canvasStream.getVideoTracks(),
+                ...dest.stream.getAudioTracks()
+            ]);
+
+            // Teksto dalinimas į trumpas frazes (3 žodžiai)
             const allWords = scriptText.toUpperCase().split(/\s+/);
             const chunks = [];
             let currentChunk = [];
@@ -100,20 +166,13 @@
                 }
             }
 
-            const synth = window.speechSynthesis;
-            synth.cancel();
-            const utterance = new SpeechSynthesisUtterance(scriptText);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.9;
-
-            const stream = canvas.captureStream(30);
             let mediaRecorder;
             const recordedChunks = [];
 
             try {
-                mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+                mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm' });
             } catch(e) {
-                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder = new MediaRecorder(combinedStream);
             }
 
             mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
@@ -121,23 +180,23 @@
                 const blob = new Blob(recordedChunks, { type: 'video/webm' });
                 downloadBtn.href = URL.createObjectURL(blob);
                 downloadBtn.style.display = 'block';
-                status.innerText = "✅ Video sugeneruotas! Atsisiųskite.";
+                status.innerText = "✅ Video sugeneruotas sėkmingai!";
             };
 
             mediaRecorder.start();
-            synth.speak(utterance);
-            status.innerText = "🎥 Įrašoma...";
+            audio.play();
+            status.innerText = "🎥 Įrašomas vaizdas ir garsas...";
 
-            const totalDuration = scriptText.length * 0.07;
+            const audioDuration = audio.duration;
             const startTime = Date.now();
 
             function render() {
                 const elapsed = (Date.now() - startTime) / 1000;
-                const progress = Math.min(elapsed / totalDuration, 0.99);
+                const progress = Math.min(elapsed / audioDuration, 0.99);
                 const currentChunkIdx = Math.floor(progress * chunks.length);
                 const activeText = chunks[currentChunkIdx] || chunks[chunks.length - 1];
 
-                // Fono piešimas
+                // Fonas
                 if (bgMedia) {
                     if (isVideo && bgMedia.readyState >= 2) {
                         ctx.drawImage(bgMedia, 0, 0, canvas.width, canvas.height);
@@ -152,41 +211,36 @@
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                 }
 
-                // Tamsintas sluoksnis
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+                // Tamsinimas
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // --- TOP TIER SUBTITRŲ LOGIKA (PRISITAIKANTIS ŠRIFTAS IR DĖŽUTĖ) ---
+                // Dinaminiai Subtitrai
                 const maxWidth = canvas.width - 120;
                 let fontSize = 70;
                 ctx.font = `900 ${fontSize}px Arial, sans-serif`;
 
-                // Dinamiškai mažiname šriftą, jei žodis per ilgas
                 while (ctx.measureText(activeText).width > maxWidth && fontSize > 35) {
                     fontSize -= 5;
                     ctx.font = `900 ${fontSize}px Arial, sans-serif`;
                 }
 
                 const textWidth = ctx.measureText(activeText).width;
-                const boxPaddingX = 40;
-                const boxWidth = textWidth + (boxPaddingX * 2);
+                const boxWidth = textWidth + 80;
                 const boxHeight = fontSize * 1.8;
 
-                // Fono dėžutė su užapvalintais kampais
                 ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
                 ctx.beginPath();
                 ctx.roundRect((canvas.width - boxWidth) / 2, canvas.height / 2 - (boxHeight / 2), boxWidth, boxHeight, 16);
                 ctx.fill();
 
-                // Dėžutės apvadas (Auksinis / Geltonas)
-                ctx.lineWidth = 4;
+                ctx.lineWidth = 5;
                 ctx.strokeStyle = '#facc15';
                 ctx.stroke();
 
-                // Tekstas su kontūru
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                
+
                 ctx.lineWidth = 8;
                 ctx.strokeStyle = '#000000';
                 ctx.strokeText(activeText, canvas.width / 2, canvas.height / 2);
@@ -194,7 +248,7 @@
                 ctx.fillStyle = '#ffffff';
                 ctx.fillText(activeText, canvas.width / 2, canvas.height / 2);
 
-                if (synth.speaking || elapsed < totalDuration) {
+                if (!audio.ended && elapsed < audioDuration + 0.5) {
                     requestAnimationFrame(render);
                 } else {
                     mediaRecorder.stop();
