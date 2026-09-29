@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlowShorts AI Studio</title>
+    <title>FlowShorts AI Studio - Top Tier Captions</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
         body { background: #090d16; color: #f8fafc; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
@@ -63,7 +63,7 @@
                 bgMedia.muted = true;
                 bgMedia.playsInline = true;
                 bgMedia.onloadedmetadata = () => {
-                    bgMedia.play().catch(e => console.log("Video auto-play blocked:", e));
+                    bgMedia.play().catch(e => console.log(e));
                 };
                 isVideo = true;
             } else {
@@ -80,7 +80,6 @@
 
             if (!scriptText) return alert("Įveskite tekstą!");
 
-            // Patikrinam, ar vaizdo įrašas paleistas
             if (isVideo && bgMedia) {
                 try { await bgMedia.play(); } catch(e) {}
             }
@@ -88,20 +87,19 @@
             downloadBtn.style.display = 'none';
             status.innerText = "🎙️ Ruošiamas įgarsinimas...";
 
-            // Teksto dalinimas į mažas CapCut frazes (po 3-5 žodžius)
+            // Frazių skaidymas per 2-3 žodžius
             const allWords = scriptText.toUpperCase().split(/\s+/);
             const chunks = [];
             let currentChunk = [];
 
             for (let i = 0; i < allWords.length; i++) {
                 currentChunk.push(allWords[i]);
-                if (currentChunk.length >= 4 || i === allWords.length - 1) {
+                if (currentChunk.length >= 3 || i === allWords.length - 1) {
                     chunks.push(currentChunk.join(" "));
                     currentChunk = [];
                 }
             }
 
-            // Įgarsinimas
             const synth = window.speechSynthesis;
             synth.cancel();
             const utterance = new SpeechSynthesisUtterance(scriptText);
@@ -130,9 +128,8 @@
             synth.speak(utterance);
             status.innerText = "🎥 Įrašoma...";
 
-            const totalDuration = scriptText.length * 0.065; // Apytikslė trukmė sekundėmis
+            const totalDuration = scriptText.length * 0.07;
             const startTime = Date.now();
-            let animId;
 
             function render() {
                 const elapsed = (Date.now() - startTime) / 1000;
@@ -140,7 +137,7 @@
                 const currentChunkIdx = Math.floor(progress * chunks.length);
                 const activeText = chunks[currentChunkIdx] || chunks[chunks.length - 1];
 
-                // 1. Piesiamas Vaizdo įrašas arba Animuotas Fonas
+                // Fono piešimas
                 if (bgMedia) {
                     if (isVideo && bgMedia.readyState >= 2) {
                         ctx.drawImage(bgMedia, 0, 0, canvas.width, canvas.height);
@@ -155,33 +152,52 @@
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                 }
 
-                // Tamsinimas
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+                // Tamsintas sluoksnis
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // 2. Rodoma tik viena trumpa frazė ekrano centre (CapCut stilius)
-                ctx.font = '900 75px Arial, sans-serif';
-                ctx.textAlign = 'center';
+                // --- TOP TIER SUBTITRŲ LOGIKA (PRISITAIKANTIS ŠRIFTAS IR DĖŽUTĖ) ---
+                const maxWidth = canvas.width - 120;
+                let fontSize = 70;
+                ctx.font = `900 ${fontSize}px Arial, sans-serif`;
 
-                // Juodas fono kvadratas frazei
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                // Dinamiškai mažiname šriftą, jei žodis per ilgas
+                while (ctx.measureText(activeText).width > maxWidth && fontSize > 35) {
+                    fontSize -= 5;
+                    ctx.font = `900 ${fontSize}px Arial, sans-serif`;
+                }
+
+                const textWidth = ctx.measureText(activeText).width;
+                const boxPaddingX = 40;
+                const boxWidth = textWidth + (boxPaddingX * 2);
+                const boxHeight = fontSize * 1.8;
+
+                // Fono dėžutė su užapvalintais kampais
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
                 ctx.beginPath();
-                ctx.roundRect(80, canvas.height / 2 - 90, canvas.width - 160, 180, 20);
+                ctx.roundRect((canvas.width - boxWidth) / 2, canvas.height / 2 - (boxHeight / 2), boxWidth, boxHeight, 16);
                 ctx.fill();
 
-                // Geltonas tekstas su juodu apvadų
-                ctx.lineWidth = 10;
-                ctx.strokeStyle = '#000000';
-                ctx.strokeText(activeText, canvas.width / 2, canvas.height / 2 + 25);
+                // Dėžutės apvadas (Auksinis / Geltonas)
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = '#facc15';
+                ctx.stroke();
 
-                ctx.fillStyle = '#facc15';
-                ctx.fillText(activeText, canvas.width / 2, canvas.height / 2 + 25);
+                // Tekstas su kontūru
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                ctx.lineWidth = 8;
+                ctx.strokeStyle = '#000000';
+                ctx.strokeText(activeText, canvas.width / 2, canvas.height / 2);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText(activeText, canvas.width / 2, canvas.height / 2);
 
                 if (synth.speaking || elapsed < totalDuration) {
-                    animId = requestAnimationFrame(render);
+                    requestAnimationFrame(render);
                 } else {
                     mediaRecorder.stop();
-                    cancelAnimationFrame(animId);
                 }
             }
 
