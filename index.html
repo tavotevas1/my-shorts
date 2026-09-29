@@ -3,37 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Shorts Video Creator</title>
+    <title>AI Viral Shorts Video Creator</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #0b0f19; color: #f8fafc; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
-        h1 { margin-bottom: 20px; color: #38bdf8; text-align: center; font-size: 26px; }
-        .container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 1000px; width: 100%; justify-content: center; }
-        .controls { flex: 1; min-width: 320px; background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
-        .preview { flex: 1; min-width: 320px; display: flex; flex-direction: column; align-items: center; background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
-        label { display: block; margin-top: 12px; margin-bottom: 5px; font-weight: bold; color: #38bdf8; font-size: 13px; text-transform: uppercase; }
-        textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; font-size: 14px; height: 130px; resize: vertical; }
-        button { width: 100%; margin-top: 18px; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', sans-serif; }
+        body { background: #090d16; color: #f8fafc; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
+        h1 { margin-bottom: 20px; color: #38bdf8; text-align: center; font-size: 28px; font-weight: 800; }
+        .container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 1050px; width: 100%; justify-content: center; }
+        .controls { flex: 1; min-width: 320px; background: #111827; padding: 25px; border-radius: 16px; border: 1px solid #1f2937; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .preview { flex: 1; min-width: 320px; display: flex; flex-direction: column; align-items: center; background: #111827; padding: 25px; border-radius: 16px; border: 1px solid #1f2937; }
+        label { display: block; margin-top: 15px; margin-bottom: 6px; font-weight: 700; color: #38bdf8; font-size: 13px; text-transform: uppercase; letter-spacing: 0.8px; }
+        textarea, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #374151; background: #030712; color: #fff; font-size: 14px; }
+        textarea { height: 110px; resize: vertical; }
+        button { width: 100%; margin-top: 20px; padding: 15px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 14px rgba(37,99,235,0.4); }
         button:hover { background: #1d4ed8; }
-        canvas { border-radius: 8px; border: 2px solid #38bdf8; max-width: 270px; max-height: 480px; width: 100%; height: auto; background: #000; }
-        #downloadBtn { background: #16a34a; display: none; margin-top: 10px; text-decoration: none; }
-        .status { margin-top: 10px; font-size: 14px; color: #f59e0b; text-align: center; font-weight: bold; }
+        canvas { border-radius: 12px; border: 3px solid #38bdf8; max-width: 300px; max-height: 533px; width: 100%; height: auto; background: #000; box-shadow: 0 0 25px rgba(56,189,248,0.25); }
+        #downloadBtn { background: #16a34a; display: none; margin-top: 15px; text-decoration: none; box-shadow: 0 4px 14px rgba(22,163,74,0.4); }
+        #downloadBtn button { margin-top: 0; }
+        .status { margin-top: 12px; font-size: 14px; color: #f59e0b; text-align: center; font-weight: 700; }
     </style>
 </head>
 <body>
 
-    <h1>🎬 AI Viral Shorts Creator</h1>
+    <h1>🎬 Viral AI Short Video Creator</h1>
 
     <div class="container">
+        <!-- Controls -->
         <div class="controls">
             <label for="script">Story Script (English):</label>
-            <textarea id="script">Did you know about the unbelievable true story of Harrison Okene? In 2013, a tugboat capsized in the ocean. Harrison was trapped inside a dark sunken ship 100 feet underwater for three whole days. Miraculously, divers found him alive in a tiny air pocket!</textarea>
+            <textarea id="script">Did you know about Harrison Okene? In 2013, a tugboat capsized in the Atlantic ocean. Harrison was trapped inside a dark sunken ship deep underwater for three whole days. Miraculously, divers found him alive in a tiny air pocket!</textarea>
 
-            <button id="generateBtn" onclick="autoGenerateShort()">🚀 Generate Short Video</button>
+            <label for="bgSelect">Select Background Video Scene:</label>
+            <select id="bgSelect">
+                <option value="ocean">🌊 Dark Stormy Ocean / Underwater</option>
+                <option value="space">🌌 Mysterious Deep Space</option>
+                <option value="fire">🔥 Cinematic Fire & Smoke</option>
+            </select>
+
+            <button id="generateBtn" onclick="generateViralShort()">⚡ Generate Viral Short</button>
             <div id="status" class="status"></div>
-            <a id="downloadBtn" download="viral_short.webm"><button style="background:#16a34a;">⬇️ Download Video</button></a>
+            <a id="downloadBtn" download="viral_short.webm"><button>⬇️ Download Full HD Video</button></a>
         </div>
 
+        <!-- Preview -->
         <div class="preview">
             <h3>Vertical Preview (9:16)</h3>
             <canvas id="videoCanvas" width="1080" height="1920"></canvas>
@@ -44,42 +55,62 @@
         const canvas = document.getElementById('videoCanvas');
         const ctx = canvas.getContext('2d');
         let animationId;
-        let particles = [];
 
-        // Initialize background dynamic particles
-        for(let i = 0; i < 40; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                radius: Math.random() * 8 + 2,
-                speedY: Math.random() * 1.5 + 0.5,
-                opacity: Math.random() * 0.5 + 0.3
-            });
-        }
+        // Open CORS HD Vertical Background Videos
+        const videoSources = {
+            ocean: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+            space: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+            fire: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+        };
 
-        function autoGenerateShort() {
-            const scriptText = document.getElementById('script').value;
+        let bgVideo = document.createElement('video');
+        bgVideo.crossOrigin = "anonymous";
+        bgVideo.loop = true;
+        bgVideo.muted = true;
+        bgVideo.playsInline = true;
+
+        async function generateViralShort() {
+            const scriptText = document.getElementById('script').value.trim();
+            const selectedBg = document.getElementById('bgSelect').value;
             const status = document.getElementById('status');
             const downloadBtn = document.getElementById('downloadBtn');
             downloadBtn.style.display = 'none';
 
-            if (!scriptText) return alert("Please enter text!");
+            if (!scriptText) return alert("Please enter a story script!");
 
-            // Break script into sentences
-            const sentences = scriptText.match(/[^.!?]+[.!?]+/g) || [scriptText];
+            status.innerText = "🎥 Loading HD Background Video Stream...";
             
-            status.innerText = "🎙️ Playing Voice & Generating Video...";
+            bgVideo.src = videoSources[selectedBg];
+            bgVideo.load();
 
-            // Setup speech
+            await new Promise((resolve) => {
+                bgVideo.oncanplay = resolve;
+                bgVideo.onerror = resolve;
+            });
+
+            try {
+                await bgVideo.play();
+            } catch(e) { console.log(e); }
+
+            status.innerText = "🎙️ Synthesizing Voice & Rendering Viral Subtitles...";
+
+            // Split into short phrase blocks (3-5 words) for fast viral captions
+            const words = scriptText.split(' ');
+            const phrases = [];
+            for (let i = 0; i < words.length; i += 4) {
+                phrases.push(words.slice(i, i + 4).join(' '));
+            }
+
+            // Setup Browser Voice
             const synth = window.speechSynthesis;
             synth.cancel();
 
             const utterance = new SpeechSynthesisUtterance(scriptText);
             const voices = synth.getVoices().filter(v => v.lang.startsWith('en'));
             if (voices.length > 0) {
-                utterance.voice = voices.find(v => v.name.includes("Google") || v.name.includes("Natural")) || voices[0];
+                utterance.voice = voices.find(v => v.name.includes("Google") || v.name.includes("Natural") || v.name.includes("Male")) || voices[0];
             }
-            utterance.pitch = 0.9;
+            utterance.pitch = 0.85;
             utterance.rate = 0.95;
 
             // Setup Recording Stream
@@ -98,58 +129,48 @@
                 const blob = new Blob(chunks, { type: 'video/webm' });
                 downloadBtn.href = URL.createObjectURL(blob);
                 downloadBtn.style.display = 'block';
-                status.innerText = "✅ Done! Click below to download your short.";
+                status.innerText = "✅ Complete! Download your video below.";
             };
 
             mediaRecorder.start();
 
-            const totalDuration = Math.max(sentences.length * 3.5, 10); // estimated seconds
             const startTime = Date.now();
+            const phraseDuration = 1.4; // Seconds per phrase for fast-paced viral reading
 
             synth.speak(utterance);
 
-            // Render loop with dynamic timer-based scene switching
             function render() {
                 const elapsed = (Date.now() - startTime) / 1000;
-                
-                // Determine current sentence based on time
-                const sceneDuration = 3.5; // seconds per sentence
-                const currentIdx = Math.min(Math.floor(elapsed / sceneDuration), sentences.length - 1);
-                const currentText = sentences[currentIdx].trim();
+                const currentPhraseIdx = Math.min(Math.floor(elapsed / phraseDuration), phrases.length - 1);
+                const currentPhrase = phrases[currentPhraseIdx] || "";
 
-                // 1. Draw Dynamic Moving Gradient Background
-                const hue = (elapsed * 15) % 360;
-                const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                grad.addColorStop(0, `hsl(${hue}, 40%, 8%)`);
-                grad.addColorStop(1, `hsl(${(hue + 40) % 360}, 50%, 15%)`);
-                ctx.fillStyle = grad;
+                // 1. Draw HD Video Background (Full Cover 9:16)
+                if (bgVideo.readyState >= 2) {
+                    // Center Crop Fill
+                    const vWidth = bgVideo.videoWidth;
+                    const vHeight = bgVideo.videoHeight;
+                    ctx.drawImage(bgVideo, 0, 0, vWidth, vHeight, 0, 0, canvas.width, canvas.height);
+                }
+
+                // 2. Cinematic Dark Overlay
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // 2. Animate Dynamic Particles
-                ctx.fillStyle = 'rgba(56, 189, 248, 0.6)';
-                particles.forEach(p => {
-                    p.y -= p.speedY;
-                    if(p.y < 0) p.y = canvas.height;
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                    ctx.fill();
-                });
-
-                // 3. Subtitle Box Frame
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
-                ctx.beginPath();
-                ctx.roundRect(80, canvas.height / 2 - 200, canvas.width - 160, 400, 24);
-                ctx.fill();
-
-                // 4. Draw Subtitle Text
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 58px Arial';
+                // 3. Draw Large Bold Viral Subtitle (Hormozi Style)
+                ctx.font = '900 80px Impact, Arial Black, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
 
-                wrapAndHighlightText(ctx, currentText, canvas.width / 2, canvas.height / 2, canvas.width - 220, 75);
+                // Text Shadow & Outline for Maximum Readability
+                ctx.lineWidth = 14;
+                ctx.strokeStyle = '#000000';
+                ctx.strokeText(currentPhrase.toUpperCase(), canvas.width / 2, canvas.height / 2);
 
-                if (elapsed < totalDuration && (synth.speaking || elapsed < sentences.length * 3.5)) {
+                // Highlight first word yellow
+                ctx.fillStyle = '#facc15';
+                ctx.fillText(currentPhrase.toUpperCase(), canvas.width / 2, canvas.height / 2);
+
+                if (elapsed < (phrases.length * phraseDuration) + 1 || synth.speaking) {
                     animationId = requestAnimationFrame(render);
                 } else {
                     synth.cancel();
@@ -159,30 +180,6 @@
             }
 
             render();
-        }
-
-        function wrapAndHighlightText(context, text, x, y, maxWidth, lineHeight) {
-            const words = text.split(' ');
-            let line = '';
-            let lines = [];
-
-            for (let n = 0; n < words.length; n++) {
-                let testLine = line + words[n] + ' ';
-                let metrics = context.measureText(testLine);
-                if (metrics.width > maxWidth && n > 0) {
-                    lines.push(line);
-                    line = words[n] + ' ';
-                } else {
-                    line = testLine;
-                }
-            }
-            lines.push(line);
-
-            let startY = y - ((lines.length - 1) * lineHeight) / 2;
-            for (let k = 0; k < lines.length; k++) {
-                context.fillStyle = (k === 0) ? '#facc15' : '#ffffff';
-                context.fillText(lines[k], x, startY + (k * lineHeight));
-            }
         }
     </script>
 </body>
